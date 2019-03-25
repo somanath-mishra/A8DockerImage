@@ -1,0 +1,294 @@
+﻿@{
+    ViewBag.Title = "ManageUser";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/CheckBox.css" rel="stylesheet" />
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+    @*<link href="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />*@     
+    @*<link href="~/Bootstrap 3.3.7/css/dropdowntree.css" rel="stylesheet" />*@
+    <link href="~/Vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Bootstrap 3.3.7/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Bootstrap 3.3.7/css/comboTreePlugin.css" rel="stylesheet" />
+    @*<link href="~/Bootstrap 3.3.7/css/bootstrap-multiselect.css" rel="stylesheet" />*@
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <form>
+                                        @ViewBag.CompanyName
+                                    </form>
+                                    <br />
+                                    <div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                        @if (TempData["Success"] != null)
+                                        {
+                                           <p class="alert alert-warning" id="successMessage">@TempData["Success"]</p>
+                                        }
+                                        @using (Html.BeginForm("CreateUserWithRole", "Account", new { SiteId = Request.QueryString["SiteId"] }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            @*<form>*@
+                                            <div class="form-group">
+                                                <label for="Forename" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">ForeName:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="Forename" class="form-control col-md-7 col-xs-12" type="text" name="Forename" required>
+                                                </div>
+
+                                            </div>
+                                            <div class="form-group">
+
+                                                <label for="Lastname" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">SurName:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="LastName" class="form-control col-md-7 col-xs-12" type="text" name="LastName" required>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <label for="Email" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">Email:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="Email" class="form-control col-md-7 col-xs-12" type="email" name="Email" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="Role" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Role:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.DropDownList("RoleId", ViewBag.Roles as IEnumerable<SelectListItem>, "--Select the Role--", new { @class = "form-control", @id = "roleDdl", @required = "required" })
+                                                </div>
+                                            </div>
+
+                                            if (this.User.IsInRole("GlobalAdmin"))
+                                            {
+                                                <div class="form-group">
+                                                    <label for="RestrictedSite" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Default Site:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        @Html.DropDownList("SiteId", ViewBag.sites as IEnumerable<SelectListItem>, new { @class = "form-control", @id = "siteDdl", @name = "SiteId", @Selected = true, @required = "required" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div id="DivSitewithSSIDAccess" style="display:none">
+                                                        <label for="SiteSSIDSponsor_Access" class="control-label col-md-3 col-sm-3 col-xs-12">Site/SSID/Sponsor Access:</label>
+                                                        <div id="SponsorList" class="col-md-6 col-sm-6 col-xs-6">
+                                                            @*<ul id='list'></ul>*@
+                                                            <input type="text" id="example" placeholder="Select" class="form-control">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                @*<div class="form-group">
+                                                    <div id="idBusinessUser" style="display:none">
+                                                        <label for="BUSite_Access" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Site Access:</label>
+                                                        <div class="col-md-6 col-sm-6 col-xs-12" id="BUSponsorAccess">
+
+                                                        </div>
+                                                    </div>                                                    
+                                                </div>*@
+                                                <div class="form-group">
+                                                    <div id="DivSiteAccess">
+                                                        <label for="Site_Access" class="control-label col-md-3 col-sm-3 col-xs-12">Site Access:</label>
+                                                        <div id='checkbox' class="col-md-6 col-sm-6 col-xs-6">
+                                                            @foreach (var item in ViewBag.sites as IEnumerable<SelectListItem>)
+                                                            {
+                                                                //int index = Model.SiteViewlist.IndexOf(item);
+                                                                string checkBoxId = "Id_CheckBox_" + @item.Value;
+                                                                <div for=@checkBoxId>
+                                                                    <input id=@checkBoxId name="ChkSiteId" type="checkbox" class="checkBoxSites" value=@item.Value> @item.Text
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                 </div>
+                                            }
+                                            <div class="form-group">
+                                                <div id="DivSSIdAccess" style="display:none">
+                                                    <label for="Site_Access" class="control-label col-md-3 col-sm-3 col-xs-12">SSID Access:</label>
+                                                    <div id='chkSSIDList' class="col-md-6 col-sm-6 col-xs-6">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                        <input type="submit" id="createUserWithRole" class="btn btn-success" value="Create" />
+                                                        <a href="@Url.Action("ManageUser", "Account")" id="Cancel" class="btn btn-danger" value="Cancel"  onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId'); return false;">Cancel</a>
+                                                    </div>
+                                                </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /page content -->
+        <!-- footer content -->
+        <footer>
+
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    @*<script src="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/js/bootstrap-multiselect.js"></script>*@
+    @*<script src="~/Bootstrap 3.3.7/js/bootstrap-multiselect.js"></script>*@
+    @*<script src="~/Bootstrap 3.3.7/js/dropdowntree.js"></script>*@
+    <script src="~/Bootstrap 3.3.7/js/comboTreePlugin.js"></script>
+    <script src="~/Bootstrap 3.3.7/js/icontains.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    var siteId = localStorage.getItem("SiteId");
+    var siteName = localStorage.getItem("SiteName");
+    $(function () {
+        $("#siteDdl").val(siteId);
+
+        $("#siteDdl,#roleDdl").change(function () {
+            $("#createUserWithRole").attr("disabled", false);
+            if ($("#roleDdl option:selected").text() == "WifiCoord") {
+                $("#DivSiteAccess").hide();
+                $("#DivSSIdAccess").show();
+                $("#DivSitewithSSIDAccess").hide();
+                //$("#idBusinessUser").hide();
+                var data = { SiteId: $("#siteDdl").val() }
+                $.post("/api/GetSSID", data, function (result) {
+                    var items = [];
+                    $.each(result, function (key, val) {
+                        items.push("<div for='chk_" + val.EssProfile + "'>" + "<input id='chk_" + val.EssProfile + "' type='checkbox' name='ChkSSIDProfileName' value='" + val.NetWorkOfSiteId + "' />" + val.SsidName + "</div>");
+                    });
+                    if (items.length > 0) {
+                        $("#chkSSIDList").html(items.join(' '));
+                    }
+                    else {
+                        $("#chkSSIDList").html(items.join(' '));
+                        $("#createUserWithRole").attr("disabled", "disabled");
+                        toastr.warning("First Create the SSID in Configure SSID Page");
+                        return false;
+                    }
+                });
+            }
+
+            else if ($("#roleDdl option:selected").text() == "BusinessUser") {
+                //debugger;
+                $("#DivSiteAccess").hide();
+                $("#DivSSIdAccess").hide();
+                $("#DivSitewithSSIDAccess").show();
+                var data = { SiteId: siteId }
+                $.post("/api/GetSitesWithSsidWithSponsor", data, function (result) {
+
+                    $('#SponsorList').children().remove();
+                    var html = '<input type="text" id="example" placeholder="Select" class="form-control" autocomplete="off">';
+                    $('#SponsorList').html(html);                    
+                    $('#example').comboTree({
+                        source: result,
+                        isMultiple: true
+
+                    });
+                    var index = $('#siteDdl').val();
+                    //var index = $(this).val();
+                   // $("[data-id=" + index + "]").hide();
+                    var checkBoxId = "Id_Check_" + (index);
+                    //$(".checkBoxSites").attr("disabled", false);
+                    //$(".checkBoxSites").prop('checked', false);
+                    $("#" + checkBoxId).prop('checked', true);
+                    //$("#" + checkBoxId).attr("disabled", true);
+                    //var html = '';
+                    //$.each(result, function (key1, value1) {
+                    //    var i = 0;
+                    //    html += "<li><input type='checkbox' name='ChkBUSiteId' value='" + value1.SiteId+ "'/>" + value1.SiteName;
+                    //    $.each(value1.NetWorkOfSite, function (key2, value2) {
+                    //        html += "<ul><li><input type='checkbox' name='ChkBUSSIDProfileName' value='" +value2.NetWorkOfSiteId+ "'/>" + value2.SsidName+"</li>";
+                    //        $.each(value2.Sponsors, function (key3, value3) {
+                    //            html += "<ul> <li><input type='checkbox' name='ChkBUSponsorId' value='" + value3.SponsorId + "'/>" + value3.SponsorName + "</li>";
+                    //            html += "</ul>";
+                    //        });
+                    //        i++;
+                    //        html += "</ul>";
+                    //    });
+                    //    html += "</li>";
+                    //});
+                    //$('#list').html(html);
+                  
+                });
+            }
+           
+            else
+            {
+                if ($(this).val() != "") {
+                    $('#restrictedSiteDdl').val('');
+                    var id = $(this).val();
+                    $.getJSON("/Admin/GetRestrictedSite?siteId=" + id, function (data) {
+                        var items = [];
+                        $.each(data, function (key, value) {
+                            items.push("<option value=" + this.value + ">" + this.text + "</option>");
+                        });
+                        $("#restrictedSiteDdl").html(items.join(' '));
+                    });
+                }
+
+                $("#DivSiteAccess").show();
+                $("#DivSSIdAccess").hide();
+                $("#DivSitewithSSIDAccess").hide();
+                //$("#idBusinessUser").hide();
+                $("#createUserWithRole").removeAttr('disabled');
+                var index = $(this).val();
+                $("[data-id=" + index + "]").hide();
+            }         
+        });
+
+        $("#siteDdl").change(function () {
+            var index = $(this).val();
+            $("[data-id=" + index + "]").hide();
+            var checkBoxId = "Id_CheckBox_" + (index);
+            $(".checkBoxSites").attr("disabled", false);
+            $(".checkBoxSites").prop('checked', false);
+            $("#" + checkBoxId).prop('checked', true);
+            $("#" + checkBoxId).attr("disabled", true);
+        });
+    });
+
+    function GetSSID(selected)
+    {
+        alert(selected.value);
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        navigation();
+        $('#BUSiteId').multiselect({
+            includeSelectAllOption: true
+        });        
+    });
+</script>

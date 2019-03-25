@@ -1,0 +1,295 @@
+﻿@using A8PlatForm.Domains.ViewModels.CPAdmin
+@model IEnumerable<UserViewModel>
+@{
+    ViewBag.PageRange = 3;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <link href="~/Bootstrap 3.3.7/css/comboTreePlugin.css" rel="stylesheet" />
+    <link href="~/Vendors/datatable/grid.css" rel="stylesheet" />
+    <style>
+        .selectedindex {
+            background-color: #f6bdbd;
+            color: white;
+        }
+    </style>
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <div>
+                                <div role="grid">
+                                    <div class="row">
+                                    <div class="col-sm-12 pq-grid-title ui-corner-top">
+                                        <div>
+                                                <div class="container-fluid">
+                                                    <br />
+                                                    <form>
+                                                        Company Name:  @ViewBag.CompanyName
+                                                    </form>
+                                                    <div class="col-md-12 text-center">
+                                                        @*<input type="button" class="btn btn-success" onclick="window.location.href = '/account/CreateUser?SiteId=' + localStorage.getItem('SiteId')" value="Create New User">
+
+                                                            <input type="button" class="btn btn-success" onclick="tableToExcel('cpLocalAdminUserTable')" value="Export Data" style="width:15%">*@
+                                                    </div>
+                                                    <div class="container">
+                                                        <br />
+                                                        <form class="form-inline" id="searchForm">
+
+                                                            <div class="form-group">
+                                                                <label for="text">Search:</label>
+                                                                <input type="text" class="form-control" id="txtUserName" />
+                                                            </div>&emsp;
+
+                                                            <div class="form-group">
+                                                                <label for="text">Show:</label>
+                                                                <select class="form-control" name="NumberOfLines" id="NumberOfLines" onchange="showNumberOfLines()">
+                                                                    <option value=@ViewBag.selectedNumber>@ViewBag.selectedNumber</option>
+                                                                    <option value="1">1</option>
+                                                                    <option value="3">3</option>
+                                                                    <option value="5">5</option>
+                                                                    <option value="7">7</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                </select>
+                                                            </div>&emsp;
+
+                                                            <input type="button" class="btn btn-success" onclick="window.location.href = '/account/CreateUser?SiteId=' + localStorage.getItem('SiteId')" value="Create New User">
+                                                            &emsp;
+                                                            <input type="button" class="btn btn-success" onclick="tableToExcel('cpLocalAdminUserTable')" value="Export Data">
+
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                               <hr />       
+                                <div class="">
+                                                <div id="dataTables-example_wrapper" class="dataTables_wrapper" role="grid">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="dataTables_length" id="dataTables-example_length"><label><select name="dataTables-example_length" aria-controls="dataTables-example" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> records per page</label></div>
+                                                        </div><div class="col-sm-6"></div>
+                                                    </div><div class="dataTables_scroll">
+                                                        <div class="dataTables_scrollHead ui-state-default" style="overflow: hidden; position: relative; border: 0px; width: 100%;">
+                                                            <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;">
+                                                                <div style="top:35px;" class="table-responsive">
+                                                                    <table class="table" id="table">
+                                                                        <thead>
+                                                                            <tr style="color:black">
+                                                                                <th style="display:none;">
+                                                                                    UserId
+                                                                                </th>
+                                                                                <th>
+
+                                                                                </th>
+
+                                                                                <th>
+                                                                                    Email/Username
+                                                                                </th>
+                                                                                <th>
+                                                                                    Last Login
+                                                                                </th>
+
+                                                                                <th>
+                                                                                    Default Site/SSID
+                                                                                </th>
+                                                                                <th>
+                                                                                    Status
+                                                                                </th>
+
+                                                                                <th>
+                                                                                    Role
+                                                                                </th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        @if (Model != null)
+                                                                        {
+                                                                            <tbody class="pointer" id="cpLocalAdminUserTable" style="cursor: pointer">
+                                                                                @if (TempData["ManageUserSuc"] != null)
+                                                                                {
+                                                                                    <p class="alert alert-success" id="successMessage">@TempData["ManageUserSuc"]</p>
+                                                                                }
+                                                                                @if (TempData["Success"] != null)
+                                                                                {
+                                                                                    <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+                                                                                }
+                                                                                @foreach (var item in Model)
+                                                                                {
+                                                                                    <tr style="color:black" class="compare-row">
+
+                                                                                        <td style="display:none;" id="UserId">
+                                                                                            @Html.DisplayFor(modelItem => item.UserId)
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @Html.CheckBoxFor(modelItem => item.Selected, new { @id = "chkSelected", @class = "chkSelected" })
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @Html.DisplayFor(modelItem => item.UserName)
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @Html.DisplayFor(modelItem => item.Lastlogin)
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @Html.DisplayFor(modelItem => item.SiteName)
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @Html.DisplayFor(modelItem => item.Status)
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @Html.DisplayFor(modelItem => item.Role)
+
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </tbody>
+                                                                        }
+                                                                        <tfoot>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <ul class="pagination" id="div1">
+                                                                                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                                                                        {
+                                                                                            if (i >= ViewBag.CurrentPage - ViewBag.PageRange && i <= ViewBag.CurrentPage + ViewBag.PageRange)
+                                                                                            {
+                                                                                                if (ViewBag.CurrentPage == i)
+                                                                                                {
+                                                                                                    <li class="active"><a id="pageLink" href="#">@i</a></li>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <li><a id="pageLink" href="#" )">@i</a></li>
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    </ul>
+                                                                            </tr>
+                                                                        </tfoot>
+                                                                    </table>
+
+                                                                    <div class="divforedit">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                <div id="dialog-confirm" style="display: none">
+                                                <p>
+                                                    <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+                                                    Are you sure to delete?
+                                                </p>
+                                            </div>
+                                 </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dialog-edit" style="display: none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Bootstrap 3.3.7/js/comboTreePlugin.js"></script>
+    <script src="~/Bootstrap 3.3.7/js/icontains.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $('table tr').click(function () {
+        $(this).addClass('selectedindex').siblings().removeClass('selectedindex');
+        var $row = $(this).closest("tr"),    // Finds the closest row <tr>
+        $tdsUserId = $row.find("td:nth-child(1)").text().toString().trim();
+        $(".chkSelected").prop('checked', false);
+        $(this).find('td input[type=checkbox]').prop('checked', true);
+        $.ajax({
+            url: '/Account/Edit?Id=' + $tdsUserId + '&SiteId='+siteId,
+            contentType: 'application/html;charset=utf-8',
+            type: 'Get',
+            dataType:'html'
+        }).success(function (result) {
+            $('.divforedit').html(result);
+        })
+    });
+    //function showPartialView(userId) {
+    //    $(".chkSelected").prop('checked', false);
+    //    $(this).find('td input[type=checkbox]').prop('checked', true);
+    //    $.ajax({
+    //        url: '/Account/Edit?Id=' + userId + '&SiteId='+siteId,
+    //        contentType: 'application/html;charset=utf-8',
+    //        type: 'Get',
+    //        dataType:'html'
+    //    }).success(function (result) {
+    //        $('.divforedit').html(result);
+    //    })
+    //}
+    $('.Edit').click(function () {
+
+    });
+    //get localstoage value
+    var siteId = localStorage.getItem("SiteId");
+    var siteName = localStorage.getItem("SiteName");
+    //document.getElementsByTagName('form')[0].innerHTML = siteName;
+    //paging click
+    $("#div1 a").click(function () {
+        var lineNumber = document.getElementById("NumberOfLines").value;
+        $(location).attr('href', '/Account/ManageUser?siteId=' + siteId + '&page=' + $(this).text() + '&userName=' + $("#txtUserName").val() + '&NumberOfLines=' + lineNumber);
+    });
+    //dropdown click to show number of lines
+    function showNumberOfLines() {
+        var lineNumber = document.getElementById("NumberOfLines").value;
+        $(location).attr('href', '/Account/ManageUser?siteId=' + siteId + '&page=' + $(this).text() + '&userName=' + $("#txtUserName").val() + '&NumberOfLines=' + lineNumber);
+    };
+    //filter any matched string
+    var $rows = $('#cpLocalAdminUserTable tr');
+    $('#myInput').keyup(function () {
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        $rows.show().filter(function () {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return !~text.indexOf(val);
+        }).hide();
+    });
+    var tableToExcel = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,'
+          , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+          , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+          , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+        return function (table, name) {
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+    })()
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        navigation();
+    })
+</script>
+

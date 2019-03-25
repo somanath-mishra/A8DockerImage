@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/UsageController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/UsageService.js"></script>
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <link href="~/Vendors/datatable/grid.css" rel="stylesheet" />
+    <link href="~/Content/ajaxSpinner.css" rel="stylesheet" />
+    <style>
+        .selected {
+            background-color: #f6bdbd;
+        }
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body" ng-controller="UsageController" ng-init="GetPackage()">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="panel-body">
+                    <div class="col-sm-12 pq-grid-title ui-corner-top">
+                        <button type="button" class="btn btn-success pull-right" ng-click="ShowCreatePackageform()">Create Package</button>
+                    </div>
+                    <div class="">
+                        <div id="dataTables-example_wrapper" class="dataTables_wrapper" role="grid">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="dataTables_length" id="dataTables-example_length"><label><select name="dataTables-example_length" aria-controls="dataTables-example" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> records per page</label></div>
+                                </div><div class="col-sm-6"></div>
+                            </div>
+                            <div class="center" data-loading> </div>
+                            <div class="dataTables_scroll">
+                                <div class="dataTables_scrollHead ui-state-default" style="overflow: hidden; position: relative; border: 0px; width: 100%;">
+                                    <div class="center" data-loading></div><div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;">
+                                        <div id="usagepackageid">
+                                            <table class="table table-responsive" id="UsagePackageTable">
+                                                <thead>
+                                                    <tr style="color:black">
+                                                        <th style="display:none;">
+                                                            PackageId
+                                                        </th>
+                                                        <th>
+
+                                                        </th>
+                                                        <th>
+                                                            Name
+                                                        </th>
+                                                        <th>
+                                                            Type
+                                                        </th>
+                                                        <th>
+                                                            Limit
+                                                        </th>
+                                                        <th>
+                                                            Speed
+                                                        </th>
+                                                        <th>
+                                                            URL Access
+                                                        </th>
+                                                        <th>
+                                                            URL Restrictions
+                                                        </th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                
+                        <tbody ng-repeat="Package in PackageDetails" ng-class="{selected :(Package.PackageId === rowSelectedpackageId && Package.checked==true)}" style="cursor: pointer">
+                            <tr ng-click="updateSelection($index, PackageDetails);setSelected(Package.PackageId,Package)" class="compare-row">
+                                <td style="display:none;">
+                                    {{Package.PackageId}}
+                                </td>
+                                <td>
+                                    <input ng-model="Package.checked" type="checkbox" />
+                                </td>
+                                <td>
+                                    {{Package.PackageName}}
+                                </td>
+                                <td>
+                                    {{Package.PackageType}}
+                                </td>
+                                <td>
+                                    {{Package.PackageLimit}}
+                                </td>
+                                
+                                <td>
+                                    {{Package.SpeedType}}
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td><a href="#" ng-click="ShowAuditData(Package.PackageId)">Audit</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                    <div>
+
+                        <hr style="border-top: 1px solid #5021de;" />
+
+                        <form ng-submit="CreatePackage()">
+                            <div id="menu2" ng-show="UsageConfigurationView">
+
+                                <div class="row">
+                                    <div class="form-horizontal pull-left">
+                                        <div class="form-group" hidden>
+                                            <label for="PackageId" class="control-label col-md-3 col-sm-3 col-xs-12">PackageId:</label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <input id="Speed" class="form-control col-md-7 col-xs-12" type="text" ng-model="_PackageDetails.PackageId">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Name" class="control-label col-md-3 col-sm-3 col-xs-12">Name:</label>
+                                            <div class="col-xs-3">
+                                                <input id="Name" class="" type="text" ng-model="_PackageDetails.PackageName" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">                                            
+                                            <label for="Type" class="control-label col-md-3 col-sm-3 col-xs-12">Type: <i class="fa fa-info-circle" title="Period: Enter Limit field in Days, Sesssion: Enter Limit Field in Minutes, Data: Enter Limit field in KB"></i></label>                                            
+                                            <div class="col-xs-3">
+                                                <select ng-model="_PackageDetails.PackageType">
+                                                    <option ng-repeat="type in Types">{{type}}</option>
+                                                </select>                                                 
+                                                @*<select ng-model="_PackageDetails.PackageType" required>
+                                                        <option value="" selected>Select</option>
+                                                        <option ng-repeat="type in Types" >{{type}} </option>
+                                                    </select>*@
+                                            </div>                                            
+                                            <div class="col-xs-3 col-md-offset-3">
+                                                <input type="button" id="idGetGroups" class="btn btn-success" value="Get Groups" ng-click="populateGroups()" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="Type" class="control-label col-md-3 col-sm-3 col-xs-12">Group Name:</label>
+                                            <div class="col-xs-3">
+
+                                                @*<input id="Type" class="" type="text" ng-model="_PackageDetails.PackageType">*@
+                                                <select ng-model="_PackageDetails.GroupIds" convert-to-number required>
+                                                    <option value="0" selected>Select</option>
+                                                    <option ng-repeat="item in lstUsageGroups" value={{item.GroupId}}>{{item.GroupName}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="Limit" class="control-label col-md-3 col-sm-3 col-xs-12">Limit: <i class="fa fa-info-circle" title="If Type is Period: Enter Limit field in Days, Sesssion: Enter Limit Field in Minutes, Data: Enter Limit field in KB"></i></label>                                            
+                                            <div class="col-xs-3">
+                                                <input id="Limit" class="" type="number" ng-model="_PackageDetails.PackageLimit" required>                                                
+                                                @*<label for="Limit" class="control-label col-md-3 col-sm-3 col-xs-12">{{this.LimitType.type}}</label>*@
+                                            </div>                                            
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Speed" class="control-label col-md-3 col-sm-3 col-xs-12">Speed:</label>
+                                            <div class="col-xs-3">
+                                                <input id="Speed" class="" type="text" ng-model="_PackageDetails.SpeedType" disabled>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-horizontal pull-left">
+
+
+                                        <div class="form-group pull-right">
+                                            <label for="UserDescription" class="control-label col-md-3 col-sm-3 col-xs-12">User Description:</label>
+
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+
+                                                <textarea class="form-control col-md-7 col-xs-12" style="border-top-width: 1px;border-right-width: 1px;height: 112px;width: 539px;" rows="5" id="userdescription" ng-model="_PackageDetails.UserDescription" required></textarea>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div>
+                                    <div class="col-md-4">
+
+                                        <table class="table table-bordered" id="UsagePackageTable">
+                                            <thead>
+                                                <tr style="background-color:#ccc;color:black">
+                                                    <th style="display:none;">
+                                                        PackageId
+                                                    </th>
+                                                    <th>
+                                                        URL Access(none specified = all sites)
+                                                    </th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="display:none;">
+                                                        {{Package.PackageId}}
+                                                    </td>
+                                                    <td>
+                                                        Facebook.com
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+
+                                    <div class="col-md-4">
+
+                                        <table class="table table-bordered" id="UsagePackageTable">
+                                            <thead>
+                                                <tr style="background-color:#ccc;color:black">
+                                                    <th style="display:none;">
+                                                        PackageId
+                                                    </th>
+                                                    <th>
+                                                        Access Restriction
+                                                    </th>
+                                                    <th>
+                                                        Limit
+                                                    </th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="display:none;">
+                                                        {{Package.PackageId}}
+                                                    </td>
+                                                    <td>
+                                                        Netflix.com
+
+                                                    </td>
+                                                    <td>
+                                                        0 GB
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                    <div class="row">                                        
+                                            <div class="col-md-2 col-sm-2 col-xs-2 col-md-offset-4 col-sm-offset-4">
+                                                <input type="button" id="delete" class="btn btn-danger" value="Delete Package" ng-click="Confirm()" />
+                                            </div>                                        
+                                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                                <input type="submit" id="Save" class="btn btn-success" value="Save Updates" />
+                                            </div>
+                                    </div>
+                                </div>
+                                @*--design*@
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal fade" id="ModalAudit" role="dialog">
+                    <div class="modal-dialog modal-lg" style="width:1000px">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <h4 class="modal-title" style="text-align:center"> Audit History </h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <div class="modal-header">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <input type="text" id="dtFromToDate" name="datetimes" class="control-label col-lg-12 col-md-12 col-sm-12" />
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <button type="button" ng-click="ShowAuditData(rowSelectedpackageId)">Find</button>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <button type="button" onclick="tableToExcel('AuditTable', 'AuditHistoryData')">Export</button>
+                                    </div>
+                                </div>
+                            <div class="modal-body">
+                                <div style="overflow-y:auto;overflow-x:scroll; height:400px;">
+                                    @*class="modal-dialog modal-sm"*@
+                                    <table class="table table-hover table-striped table-responsive" id="AuditTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none">Audit Log Id</th>
+                                                <th>User Name</th>
+                                                <th>EventDate</th>
+                                                <th>Event Type</th>
+                                                <th>Column Name</th>
+                                                <th>Original Value</th>
+                                                <th>New Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="item in AuditData">
+                                            <tr>
+                                                <td style="display:none">
+                                                    {{item.AuditLogID}}
+                                                </td>
+                                                <td>
+                                                    {{item.UserID}}
+                                                </td>
+                                                <td>
+                                                    {{item.EventDateUTC|utcToLocal : "dd:MM:yyyy HH:mm:ss"}}
+                                                </td>
+                                                <td>
+                                                    {{item.EventType}}
+                                                </td>
+                                                <td>
+                                                    {{item.ColumnName}}
+                                                </td>
+                                                <td>
+                                                    {{item.OriginalValue}}
+                                                </td>
+                                                <td>
+                                                    {{item.NewValue}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/Scripts/tableToExcel.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dtFromToDate').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 1,
+            locale: {
+                format: 'MM/DD/YYYY H:mm'
+            }
+        });
+        navigation();
+    });
+
+</script>

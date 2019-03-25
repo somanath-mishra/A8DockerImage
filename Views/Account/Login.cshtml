@@ -1,0 +1,69 @@
+﻿@using A8PlatForm.Domains.CustomIdentity
+@model ApplicationUser
+@{
+    ViewBag.Title = "Login";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    @Styles.Render("~/Content/css")
+    <title id="loginPageTitle">User Login</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="card card-container">
+            <div role="main" style="margin-top:-40px;">
+                <div class="row" id="adminDiv">
+                    @*<center><h2 style="color:rgb(128,0,0);font-size:18px;">User Login</h2></center>*@
+                    <center><h2 style="color:rgb(128,0,0);font-size:18px;"><img src="~/Images/FlameTrans.png" style="height:60px;width:100px;background:transparent;border:none" id="imageLogo" /></h2></center>
+                </div>
+                <div class="auth-form p-3" id="login">
+                    @using (Html.BeginForm("GALogin", "Account", new {ReturnUrl = ViewBag.ReturnUrl}, FormMethod.Post, new {@class = "form-horizontal", role = "form", id = "formid"}))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                        <input id="LocationDashUrl" type="hidden" value="@System.Configuration.ConfigurationManager.AppSettings["LocationDashBoardUrl"]"/>
+                        <input value="" hidden id="companyId"/>
+                        <div class="auth-form-body mt-4">
+                            <label for="login_field" style="font-size: 14px;">
+                                Username or email address
+                            </label>
+                            @Html.TextBoxFor(m => m.UserName, new {@class = "form-control input-block", @id = "login_field", @name = "login", @autofocus = "autofocus", @autocapitalize = "off", @autocorrect = "off", @tabindex = "1", required = "required", @type = "Email"})
+                            @Html.ValidationMessageFor(m => m.UserName, "", new {@class = "text-danger"})
+                            <br/>
+                            <div class="divPas" id="divPas">
+                                <label for="password" id="pwd" style="font-size:14px;">
+                                    Password&emsp;&emsp;<a href="/Account/ForgotPassword" class="label-link alignright" style="font-size:12px;">Forgot password?</a>
+                                </label>
+                                @Html.TextBoxFor(m => m.PasswordHash, new {@class = "form-control input-block", @id = "password", @name = "Password", @type = "password", @tabindex = "2", required = "required"})
+                                @Html.ValidationMessageFor(m => m.PasswordHash, "", new {@class = "text-danger"})
+                            </div>
+                            <br/>
+                            <input class="btn btn-primary btn-block" data-disable-with="Signing in…" name="commit" tabindex="3" type="submit" value="Sign in" id="SignIn"/>
+                            <br/>
+                            @if (!String.IsNullOrEmpty(ViewBag.SiteImagePath))
+                            {
+                                <div id="footer">
+                                    <center>
+                                        <img src="@ViewBag.SiteImagePath" style="height:100px; width: 100px;" id="imageLogo" />
+                                    </center>
+                                </div>
+                            }
+                       </div>
+                    }
+                </div>
+                <div class="row">
+                    <center><h2 style="color:rgb(128,0,0);font-size:18px;">Powered by<img src="~/Images/WildfireTrans.png" style="height:60px;width:100px;background:transparent;border:none" id="imageLogo" /></h2></center>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body').css("background-color", '@ViewBag.BackGroudColor');
+    });
+</script>

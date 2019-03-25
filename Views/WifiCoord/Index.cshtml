@@ -1,0 +1,433 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/ManageWifiUserController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/ManageWifiUserService.js"></script>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" style="min-height: 751px;" ng-controller="ManageWifiUserController">
+                <div class="" ng-init="GetSSIDAsPerSite()">
+                    <div class="page-title">
+                        <div class="title_left">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="container">
+                                        <form class="form-inline" id="searchForm">
+                                            <label for="Site">SSID:</label>
+                                            <select ng-model="SelectedSSID" class="form-control">
+                                                  <option ng-repeat="itemNetWorkOfSite in lstNetWorkOfSitesData" value="{{itemNetWorkOfSite.NetWorkOfSiteId}}">
+                                                      {{itemNetWorkOfSite.SsidName}}
+                                                  </option>
+                                             </select>
+                                            <input type="text" class="form-control"  style="padding-left:60px;" autofocus="autofocus" id="myInput" value="" ng-model="queryText" placeholder="Search Text">
+                                            <input type="button" id="btnSearch"  style="padding-left:60px;" class="btn btn-success" value="Find User" ng-click="FilterUserDetails()">
+                                        </form>
+                                    </div>
+                                    <hr>
+                                    <div class="row container-fluid">
+                                        <div style="top:35px;">
+                                            <table class="table table-hover table-striped table-responsive" id="cpTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Account No</th>
+                                                        <th>Surname</th>
+                                                        <th>Forename</th>
+                                                        <th>Cabin No</th>
+                                                        <th>Embarked</th>
+                                                        <th>Package Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="item in lstWifiUsersData">
+                                                        <td>
+                                                            {{}}
+                                                        </td>
+                                                        <td>
+                                                            {{}}
+                                                        </td>
+                                                        <td>
+                                                            {{}}
+                                                        </td>
+                                                        <td>
+                                                            {{}}
+                                                        </td>
+                                                        <td>
+                                                            {{}}
+                                                        </td>
+                                                        <td>
+                                                            {{}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td>
+                                                            <ul class="pagination" id="div1">
+                                                                <li ng-repeat="n in range()"><a ng-href="{{n}}" ng-click="$event.preventDefault(); onPageNumberClick(n)">{{n}}</a></li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div role="tabpanel" id="dvPassport" style="display:none">
+                                            <ul class="nav nav-tabs nav-justified" role="tablist">
+                                                <li role="presentation" class="active"><a href="#UserProfile" aria-controls="UserProfile" role="tab" data-toggle="tab" aria-expanded="true">User Details</a></li>
+                                                <li role="presentation" class=""><a href="#UserPassword" aria-controls="UserPassword" role="tab" data-toggle="tab" aria-expanded="false">Password</a></li>
+                                                <li role="presentation" class=""><a href="#Device" aria-controls="Devices" role="tab" data-toggle="tab" aria-expanded="false">Devices</a></li>
+                                                <li role="presentation" class=""><a href="#Custom" aria-controls="Custom" role="tab" data-toggle="tab" aria-expanded="false">Custom</a></li>
+                                            </ul>
+                                            <div class="tab-content" id="UserView">
+                                                <div role="tabpanel" class="tab-pane fade active in" id="UserProfile">
+                                                    <br>
+                                                    <br>
+                                                    <div class="form-horizontal">
+                                                        <div class="form-group">
+                                                            <label for="mobile-number" class="control-label col-md-3">Mobile Number:</label>
+                                                            <div class="col-md-3">
+                                                                <input id="mobile-number" class="form-control col-md-2" type="text" name="MobileNumber" ng-model="chckedWifiUSerIndexs[0].MobileNumer">
+                                                            </div>
+                                                            <label class="control-label col-md-3" for="FirstName">Email:</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control text-box single-line" id="Email" name="Email" type="text" ng-model="chckedWifiUSerIndexs[0].Email">
+                                                                <input id="userIdHidden" class="form-control text-box single-line" name="UserId" style="display:none" type="number" ng-model="chckedWifiUSerIndexs[0].UserId">
+                                                                <input id="userIdHidden" class="form-control text-box single-line" name="SSId" style="display:none" type="number" ng-model="chckedWifiUSerIndexs[0].SSId">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="gender" class="control-label col-md-3">Gender:</label>
+                                                            <div class="col-md-3">
+                                                                <select class="form-control" ng-model="chckedWifiUSerIndexs[0].GenderId" ng-options="itemGenderData.GenderId as itemGenderData.Value for itemGenderData in lstGenderData"></select>
+                                                            </div>
+                                                            <label class="control-label col-md-3" for="birthDate">Birth Date:</label>
+                                                            <div class="col-md-3">
+                                                                <input type="date" class="form-control" id="textBirthDate" ng-model="chckedWifiUSerIndexs[0].BirthDate">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="ageRange" class="control-label col-md-3">Age Range:</label>
+                                                            <div class="col-md-3">
+                                                                <select id="Age" name="AgeId" class="form-control" ng-model="chckedWifiUSerIndexs[0].AgeId" ng-options="itemAgeData.AgeId as itemAgeData.Value for itemAgeData in lstAgeData "></select>
+                                                            </div>
+                                                            <label for="auto-login" class="control-label col-md-3">Auto-login users:</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control col-md-2" type="checkbox" value="true" id="checkbox1" name="AutoLogin" style="width:30px;" ng-model="chckedWifiUSerIndexs[0].AutoLogin">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="status" class="control-label col-md-3">Status:</label>
+                                                            <div class="col-md-3">
+                                                                <select name="Status" class="form-control" ng-model="chckedWifiUSerIndexs[0].Status" ng-options="itemStatus.key as itemStatus.value for itemStatus in lstStatus"></select>
+                                                            </div>
+                                                            <label for="Group" class="control-label col-md-3">Group:</label>
+                                                            <div class="col-md-3">
+                                                                <select class="form-control" id="selectedGroupDdl" name="GroupDdl">
+                                                                    <option value="">--Select Group--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                                <input type="submit" id="update" class="btn btn-success" value="Update User" ng-click="UpdateUserDetails(chckedWifiUSerIndexs[0])">
+                                                                <input type="button" id="btnDelete" class="btn btn-danger pull-right" value="Delete User" ng-click="DeleteParticularUser(chckedWifiUSerIndexs[0])">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div role="tabpanel" class="tab-pane fade" id="UserPassword">
+                                                    <div class="form-horizontal">
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Password"></label>
+                                                            <div class="col-md-3">
+                                                                <input id="userIdHidden" class="form-control text-box single-line" name="UserId" style="display:none" type="number" value="2" ng-model="chckedWifiUSerIndexs[0].UserId">
+                                                                <input id="userIdHidden" class="form-control text-box single-line" name="SSId" style="display:none" type="number" value="4" ng-model="chckedWifiUSerIndexs[0].SSId">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="PromotionEmailOptIn">Promotion email opt-in :</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control" type="checkbox" id="checkbox1" name="PromotionEmailOptIn" style="width:30px;" disabled="disabled" ng-model="chckedWifiUSerIndexs[0].promotional_email">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Password">New Password:</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control text-box single-line" id="Password" name="Password" placeholder="newpassword" type="password" ng-model="chckedWifiUSerIndexs[0].Password">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="UserOfDataOptIn">User of data opt-in:</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control" type="checkbox" id="checkbox1" name="UserOfDataOptIn" style="width:30px;" disabled="disabled" ng-model="chckedWifiUSerIndexs[0].UserOfDataOptIn">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Password">Confirm Password:</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control text-box single-line" id="ConfirmPassword" name="Password" placeholder="newpassword" type="password">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="3rdPartyOptIn">3rd party opt-in :</label>
+                                                            <div class="col-md-3">
+                                                                <input class="form-control col-md-7 col-xs-12" type="checkbox" id="checkbox1" name="ThirdPartyOptIn" style="width:30px;" ng-model="chckedWifiUSerIndexs[0].ThirdPartyOptIn">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2"></label>
+                                                            <div class="col-md-3">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="Term_conditions">Terms &amp; Conditions:</label>
+                                                            <div class="col-md-1">
+                                                                <input class="form-control col-md-7 col-xs-12 text-box single-line" id="Term_conditions" name="Term_conditions" readonly="readonly" type="text" value="1.1">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                            <input type="submit" id="update" class="btn btn-success" value="Upadate Password" ng-click="UpdatePasswordDetails(chckedWifiUSerIndexs[0])">
+                                                        </div>
+                                                    </div>
+                                                    @*</form>*@
+                                                </div>
+                                                <div role="tabpanel" class="tab-pane fade" id="Device">
+                                                    <br>
+                                                    <br>
+                                                    <div class="form-horizontal" style="margin-right: 40%;">
+                                                        <div class="form-group">
+                                                            <form id="MacAddressForm" ng-submit="AddOneMacAddressForWifiUser()">
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <input id="macAddress" class="form-control col-md-2" type="text" name="MacAddress" maxlength="17" ng-model="MacAddress.MacAddressValue" required>
+                                                                        @*<input id="userIdHidden" class="form-control text-box single-line" name="UserId" style="display:none" type="number" ng-model="chckedWifiUSerIndexs[0].UserId">
+                                                                            <input id="userIdHidden" class="form-control text-box single-line" name="SiteId" style="display:none" type="number" ng-model="chckedWifiUSerIndexs[0].SSId">*@
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <input type="submit" id="addMacAddress" class="btn btn-success" value="Add Mac Address">
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <br>
+                                                    <div>
+                                                        <div class="row container-fluid">
+                                                            <div style="top:35px;">
+                                                                <table class="table table-hover table-striped table-responsive" id="cpTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="display:none;">
+                                                                                MacId
+                                                                            </th>
+                                                                            <th>
+                                                                                Mac Address
+                                                                            </th>
+                                                                            <th>
+                                                                                Device Type
+                                                                            </th>
+                                                                            <th>
+                                                                                Last Login
+                                                                            </th>
+                                                                            <th>
+                                                                                Session Length
+                                                                            </th>
+                                                                            <th>
+                                                                                Data used
+                                                                            </th>
+                                                                            <th style="display:none;">
+                                                                                Delete
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody class="pointer" id="DeviceDetails">
+                                                                        <tr ng-repeat="item in chckedWifiUSerIndexs[0].MacAddresses">
+                                                                            <td>
+                                                                                {{item.MacId}}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{item.MacAddressValue}}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{item.OperatingSystem}}
+                                                                            </td>
+                                                                            <td></td>
+                                                                            <td></td>
+                                                                            <td></td>
+                                                                            <td>
+                                                                                <input type="button" class="btn btn-danger" value="Delete MacAddress" ng-click="DeleteMacAddressDevice(item)" />
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div role="tabpanel" class="tab-pane fade" id="Custom">
+                                                    <br>
+                                                    <br>
+                                                    <div class="form-horizontal">
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Address">Address Line 1:</label>
+                                                            <input type="hidden" ng-model="chckedWifiUSerIndexs[0].UsersAddress.UserId" />
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].UsersAddress.Address1">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="Custom1">Custom field 1:</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].Custom1">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Address">Address Line 2 :</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].UsersAddress.Address2">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="Custom2">Custom field 2:</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].Custom2">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="County">County :</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].UsersAddress.County">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="Custom3">Custom field 3 :</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].Custom3">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="pwd">Postcode :</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="Postcode" name="Postcode" ng-model="chckedWifiUSerIndexs[0].UsersAddress.PostCode">
+                                                            </div>
+                                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="Custom4">Customer Field 4 :</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" name="Custom4" ng-model="chckedWifiUSerIndexs[0].Custom4">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Custom5"></label>
+                                                            <div class="col-md-3">
+                                                            </div>
+                                                            <label for="custom-5" class="control-label col-md-3 col-sm-3 col-xs-12">Customer Field 5 :  </label>
+                                                            <div class="col-md-3 ">
+                                                                <input class="form-control col-md-7 col-xs-12" type="checkbox" id="Custom5" name="Custom5" style="width:30px;" ng-model="chckedWifiUSerIndexs[0].Custom5">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2" for="Country">Country :</label>
+                                                            <div class="col-md-3">
+                                                                <input type="text" class="form-control" id="text" ng-model="chckedWifiUSerIndexs[0].UsersAddress.Country">
+                                                            </div>
+                                                            <label for="custom-6" class="control-label col-md-3 col-sm-3 col-xs-12">Customer Field 6 :</label>
+                                                            <div class="col-md-3 ">
+                                                                <input class="form-control col-md-7 col-xs-12" type="checkbox" id="Custom6" name="Custom6" style="width:30px;" ng-model="chckedWifiUSerIndexs[0].Custom6">
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <br>
+                                                        <div class="form-group">
+                                                            <div class="col-md-6">
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <input type="button" id="updateUser" class="btn btn-success pull-right" ng-click="UpdateUserDetails(chckedWifiUSerIndexs[0])" value="Update User">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="AddGroup" style="display:none">
+                                        <label for="Group" class="control-label col-md-3" style="padding-left:20%">Group:</label>
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="selectedGroupDdl" name="GroupDdl" onchange="alocateSelectedGroup(this)">
+                                                <option value="">--Select Group--</option>
+                                            </select>
+                                        </div>
+                                        <input type="button" id="btnAdd" class="btn btn-success" value="Add" onclick="addUserToGroup()">
+                                    </div>
+                                    <div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <!-- <script src="../vendors/DateJS/build/date.js"></script>-->
+    <script src="~/build/js/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        navigation();
+    });
+
+    var checkedItems = 0;
+    var checkBoxValueItme = [];
+
+    function ShowHideDiv(chkPassport) {
+
+        //debugger;
+        $("input:checkbox[name=type]:checked").each(function () {
+            checkBoxValueItme.push({ UserId: $(this).val() });
+        });
+        var partialViewUserDetails = document.getElementById("dvPassport");
+        var partialViewAddGroup = document.getElementById("AddGroup");
+        if (chkPassport.checked) {
+            checkedItems++;
+        }
+        else {
+            checkedItems--;
+        }
+        if (checkedItems == 1) {
+            partialViewUserDetails.style.display = "block";
+            partialViewAddGroup.style.display = "none";
+
+        }
+        else if (checkedItems >= 2) {
+            partialViewUserDetails.style.display = "none";
+            partialViewAddGroup.style.display = "block";
+        }
+        else if (checkedItems == 0) {
+            partialViewUserDetails.style.display = "none";
+            partialViewAddGroup.style.display = "none";
+
+        }
+    }
+
+</script>

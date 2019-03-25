@@ -1,0 +1,597 @@
+﻿@using Microsoft.AspNet.Identity;
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <style>
+      .ng-scope selected {
+            background-color: #f6bdbd;
+        }
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" style="min-height: 751px;" ng-controller="ManageWifiUserController">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div>
+                                <div class="x_content">
+                                    <div class="container">
+                                        <form class="form-inline" id="searchForm">
+                                            <div ng-init="GetSSID()">
+                                                <label for="Site">SSID:</label>
+                                                <select ng-model="SelectedSSID" class="form-control">
+                                                    <option ng-repeat="itemNetWorkOfSite in SSIdDetails" value="{{itemNetWorkOfSite.NetWorkOfSiteId}}" class="form-control">
+                                                        {{itemNetWorkOfSite.SsidName}}
+                                                    </option>
+                                                </select>
+
+                                                <input type="text" class="form-control" style="padding-left:60px;" autofocus="autofocus" id="myInput" value="" ng-model="queryText" placeholder="Search Text">
+                                                
+                                                <div class="form-group">
+                                                    <label for="text">Show:</label>
+                                                    <select class="form-control" style="float:right" name="NumberOfLines" id="NumberOfLines" ng-model="PageSize">
+                                                        <option value="0">--Select--</option>
+                                                        <option value="3">3</option>
+                                                        <option value="5">5</option>
+                                                        <option value="7">7</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <input type="button" id="btnSearch" class="btn btn-success" value="Find User" ng-click="FilterUserDetails()">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <hr>
+                                    <div class="row container-fluid">
+                                        <div style="top:35px;">
+                                            <div>
+                                                <table class="table table-hover table-responsive" id="cpTable">
+                                                    <thead>
+                                                        <tr style="color:black">
+                                                            <th style="display:none;">
+                                                                UserId
+                                                            </th>
+                                                            <th></th>
+                                                            <th>Account No</th>
+                                                            <th>Surname</th>
+                                                            <th>Forename</th>
+                                                            <th>Created DateTime<br />
+                                                                <input type="text" id="dtFromDate" name="datetimes" class="form-control" style="width:100%" ng-model="CreatedFromandToDate">
+                                                            </th>
+                                                            <th>Update DateTime<br />
+                                                                <input type="text" id="dtFromDate1" name="datetimes" class="form-control" style="width:100%" ng-model="UpdatedFromandToDate">
+                                                            </th>
+                                                            <th>Cabin No</th>
+                                                            @*<th>Package Status</th>*@
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody ng-repeat="item in lstWifiUsersData" ng-click="updateSelection($index, lstWifiUsersData);setSelectedItem(item.WifiUserId,item)" ng-class="{selected: item.UserId === idSelectedItem}" style="cursor: pointer">
+                                                        <tr class="compare-row">
+                                                            <td style="display:none;">
+                                                                {{item.WifiUserId}}
+                                                            </td>
+                                                            <td>
+                                                                <input ng-model="item.checked" type="checkbox" />
+                                                            </td>
+                                                            <td>
+                                                                {{item.UserName}}                                                                
+                                                            </td>
+                                                            <td>
+                                                                {{item.LastName}}
+                                                            </td>
+                                                            <td>
+                                                                {{item.FirstName}}
+                                                            </td>
+                                                            <td>
+                                                                {{item.CreatedDatTime|date:"MMM d, y h:mm:ss a"}}
+                                                            </td>
+                                                            <td>
+                                                                {{item.UpdateDateTime|date:"MMM d, y h:mm:ss a"}}
+                                                            </td>
+                                                            <td>
+                                                                {{item.Custom1}}
+                                                            </td>
+                                                            @*<td>
+                                                                {{}}
+                                                            </td>*@
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td>
+                                                                <ul class="pagination" id="div1">
+                                                                    <li ng-repeat="n in range()">
+                                                                        <a ng-href="{{n}}" ng-click="$event.preventDefault(); onPageNumberClick(n)">{{n}}</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <hr />
+                                            <div id="UsagePackageDetails" ng-show="UserUsagePackage">
+                                                <h4><b>Account: {{UserDetail.FirstName + " "+ UserDetail.LastName}} {{ }}</b></h4>
+
+                                                <div class="col-lg-12 col-md-12 col-sm-12" style="border-top:2px solid;padding-right:0">
+                                                    <div class="col-lg-9 col-md-9 col-sm-9">
+                                                        <div class="row">
+                                                            <div class="col-lg-1 col-md-1 col-sm-1" style="text-align:center;padding-top:40px">
+                                                                Current
+                                                            </div>
+                                                            <div class="col-lg-11 col-md-11 col-sm-11">
+                                                                <table class="table table-hover table-responsive" id="UsageTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="display:none"></th>
+                                                                            <th>Package Name</th>
+                                                                            <th>Started</th>
+                                                                            <th>Ended</th>
+                                                                            <th>%Used</th>
+                                                                            <th>Price Paid</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="display:none">
+                                                                                {{CurrentPackage.UserPackageId}}
+                                                                            </td>
+                                                                            <td style="width:20%">
+                                                                                {{CurrentPackage.PackageName}}
+                                                                            </td>
+                                                                            <td style="width:25%">
+                                                                                {{CurrentPackage.PackageStartTime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                                            </td>
+                                                                            <td style="visibility:hidden;width:25%">
+                                                                                {{CurrentPackage.PackageEndTime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                                            </td>
+                                                                            <td style="width:15%">
+                                                                                {{CurrentPackage.PerDataUsed| number:2}}
+                                                                            </td>
+                                                                            <td style="width:15%">
+                                                                                {{CurrentPackage.PricePaid| number:2}}
+                                                                            </td>
+                                                                            <td><a href="#" ng-click="ShowAuditData(CurrentPackage.UserPackageId)">Audit</a></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <button ng-click="UserActivity()" class="btn btn-success col-xs-offset-2">Details</button>
+                                                            <button ng-click="ExtendValidity()" class="btn btn-success">Extend Validity</button>
+                                                            <button ng-click="EndPackage()" class="btn btn-success">Close Current Package</button>
+                                                        </div>                                                        
+                                                        <div class="row">
+                                                            <div class="col-lg-1 col-md-1 col-sm-1">
+                                                                History
+                                                            </div>
+                                                            <div class="col-lg-11 col-md-11 col-sm-11">
+                                                                <table class="table table-hover table-striped table-responsive">
+                                                                    <tbody ng-repeat="item in HistoryPackage">
+                                                                        <tr>
+                                                                            <td style="display:none"> {{item.UserPackageId}}</td>
+                                                                            <td style="width:20%">
+                                                                                {{item.PackageName}}
+                                                                            </td>
+                                                                            <td style="width:25%">
+                                                                                {{item.PackageStartTime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                                            </td>
+                                                                            <td style="width:25%">
+                                                                                {{item.PackageEndTime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                                            </td>
+                                                                            <td style="width:15%">
+                                                                                {{item.PerDataUsed| number:2 }}
+                                                                            </td>
+                                                                            <td style="width:15%">
+                                                                                {{item.PricePaid}}
+                                                                            </td>
+                                                                            <td><a href="#" ng-click="ShowAuditData(item.UserPackageId)">Audit</a></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-sm-3" style="border-color:#ddd;border-bottom:2px solid;border-right:2px solid;border-left:2px solid" ng-show="RefundDetails">
+                                                        <div ng-show="RefundPackage">
+                                                            <div class="row" style="padding-top:20px">
+                                                                <div class="col-lg-3 col-md-3 col-sm-3" style="text-align:right">
+                                                                    <label class="" for="Refund">Refund:</label>
+                                                                </div>
+                                                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                                                    <input type="checkbox" id="chkBoxRefund" style="width: 20px;height: 20px;" ng-model="checkboxchkd">
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                                                    <select ng-model="RefundPer" class="form-control" ng-change="getRefundPer()">
+                                                                        <option value="0" class="form-control">Select</option>
+                                                                        <option value="1" class="form-control">Unused</option>
+                                                                        <option value="10" class="form-control">10%</option>
+                                                                        <option value="20" class="form-control">20%</option>
+                                                                        <option value="30" class="form-control">30%</option>
+                                                                        <option value="40" class="form-control">40%</option>
+                                                                        <option value="50" class="form-control">50%</option>
+                                                                        <option value="60" class="form-control">60%</option>
+                                                                        <option value="70" class="form-control">70%</option>
+                                                                        <option value="80" class="form-control">80%</option>
+                                                                        <option value="90" class="form-control">90%</option>
+                                                                        <option value="100" class="form-control">100%</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <br />
+                                                        <div class="row" ng-show="ClosePackage" >
+                                                            <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                                <label class="" for="ClosePackage">Close Package:</label>
+                                                            </div>
+                                                            <div class="col-lg-1 col-md-1 col-sm-1">
+                                                                <input type="checkbox" id="chkBoxClosePackage" style="width: 20px;height: 20px;" ng-model="chkStatus" ng-change="ShowHideDiv()">
+                                                            </div>
+                                                        </div>
+                                                        <br />
+                                                        <div ng-show="NewPackage">
+                                                            <div class="row">
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                                    <label class="" for="NewPackage">New Package:</label>
+                                                                </div>
+                                                                <div class="col-lg-5 col-md-5 col-sm-5">
+                                                                    <select ng-model="SelectedPackage" class="form-control">
+                                                                        <option value="0"> Select Package </option>
+                                                                        <option ng-repeat="item in SSIDDetails" value="{{item.Package.PackageId}}" class="form-control">
+                                                                            {{item.Package.PackageName}}
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                                                <input type="button" id="btnUsagePackage" class="btn btn-success" value="Update" ng-click="ShowAccountDetails()">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-3 col-sm-3" style="border-color:#ddd;border-bottom:2px solid;border-right:2px solid;border-left:2px solid" ng-show="AccountDetails">
+                                                        <div style="padding:0">
+                                                            <div class="row" style="text-align:center">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12" style="text-align:center">
+                                                                    <label class="" for="" ng-model="Operation">{{Operation}}</label>
+                                                                            
+                                                                   @* REFUND {{selectedvalues| number : 2}}%*@
+                                                                </div>
+                                                            </div>
+                                                            <br />
+                                                            <div class="row" ng-show="NoAddPostReplace">
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                                    <label class="" for="Add Post Replace">Add Post:</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:left">
+                                                                    <label ng-class="" for="Add Replace" ng-model="AddPostReplace"> {{AddPostReplace| number : 2}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row" ng-show="NoAddPost" ng-if="checkboxchkd" >
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                                    <label class="" for="Add Post">Add Post:</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:left">
+                                                                    <label ng-class="" for="Add" ng-model="AddPost"> {{AddPost*CurrentPackage.PricePaid| number : 2}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <br />
+                                                            <div class="row" ng-show="NoVoidPost" ng-if="checkboxchkd" >
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                                    <label class="" for="Void Post">Void Post:</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:left">
+                                                                    <label ng-class="" for="Void" ng-model="VoidPost"> {{-CurrentPackage.PricePaid| number : 2}}</label>
+                                                                </div>
+                                                            </div>
+                                                            <br />
+                                                            <div class="row">
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                                    <label class="" for="Balance">Balance:</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:left">
+                                                                    @*<label ng-class="" for="Balance" ng-model="Balance"> {{Balance|number:2}}</label>*@
+                                                                     <label ng-class="" for="Balance"> {{(CurrentPackage!=null&&RefundPer>0)?((AddPostReplace+(AddPost*CurrentPackage.PricePaid)-CurrentPackage.PricePaid)| number : 2):AddPostReplace}}</label>
+                                                                   @* <label ng-class="" for="Balance"> {{ CurrentPackage.PricePaid ? (AddPost*CurrentPackage.PricePaid)-CurrentPackage.PricePaid : (!AddPost ? AddPostReplace : AddPost )}}</label>*@
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-sm-12" ng-show="CancelOrConfirm">
+                                                    <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:right">
+                                                        <input type="button" id="btnCancelRefund" class="btn btn-danger" value="Cancel" ng-click="ShowRefundDetails()">
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6" style="text-align:left">
+                                                        <input type="button" id="btConfirmRefund" class="btn btn-success" value="Confirm" ng-click="RefundOrReplacePackage()">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="ModalUserActivity" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title"> Usage Activity </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    @*class="modal-dialog modal-sm"*@
+                                    <table class="table table-hover table-striped" id="UsageTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none"></th>
+                                                <th>StartTime</th>
+                                                <th>StopTime</th>
+                                                <th>TotalTime</th>
+                                                <th>DataUsed (in Kb)</th>
+                                                <th>PackageStartTime</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="item in UserActivityData">
+                                            <tr>
+                                                <td style="display:none">
+                                                    {{item.WifiUserId}}
+                                                </td>
+                                                <td>
+                                                    {{item.acctstarttime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                </td>
+                                                <td>
+                                                    {{item.acctstoptime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                </td>
+                                                <td>
+                                                    {{item.TotalTime}}
+                                                </td>
+                                                <td>
+                                                    {{(item.DataUsed)/1000|number:2}}
+                                                </td>
+                                                <td>
+                                                    {{item.PackageStartTime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="ModalExtendValidity" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title"> Extend Validity </h4>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <label class="">Package Type:</label>
+                                    <input type="text" class="form-control" value="{{package.PackageType}}" readonly>
+                                    <label>Data Used(in %):</label>
+                                    <input type="text" class="form-control" value="{{package.PerDataUsed| number:2}}" readonly>
+                                    <label>Extend Package Validity:</label>
+                                    <select ng-model="ExtraData" class="form-control">
+                                        @*<option value="" class="form-control">Select</option>*@
+                                        <option value="10" class="form-control">10%</option>
+                                        <option value="20" class="form-control">20%</option>
+                                        <option value="30" class="form-control">30%</option>
+                                        <option value="40" class="form-control">40%</option>
+                                        <option value="50" class="form-control">50%</option>
+                                        <option value="60" class="form-control">60%</option>
+                                        <option value="70" class="form-control">70%</option>
+                                        <option value="80" class="form-control">80%</option>
+                                        <option value="90" class="form-control">90%</option>
+                                        <option value="100" class="form-control">100%</option>
+                                    </select>
+                                    <label ng-if="package.PackageType=='Data'">Extra Data in kb:</label><label ng-if="package.PackageType!='Data'">Extra Data in hours:</label>
+                                    <input type="text" class="form-control" value="{{(package.PackageType=='Data')?(((ExtraData/100)*package.PackageValidity)/1000):((ExtraData/100)*package.PackageValidity)/3600}}" readonly/>
+                                    <input type="button" id="btnSaveValidity" class="btn btn-success" value="Save" ng-click="ExtendPackageValidity()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="ModalAudit" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <h4 class="modal-title" style="text-align:center"> Audit History </h4>
+                            <div class="modal-header">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <input type="text" id="dtFromToDate" name="datetimes" class="control-label col-lg-12 col-md-12 col-sm-12" />
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <button type="button" ng-click="ShowAuditData(CurrentPackage.UserPackageId)">Find</button>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <button type="button" onclick="tableToExcel('AuditTable', 'AuditHistoryData')">Export</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <div style="overflow-y:auto;overflow-x:scroll; height:400px;">
+                                    @*class="modal-dialog modal-sm"*@
+                                    <table class="table table-hover table-striped table-responsive" id="AuditTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none">AuditLogId</th>
+                                                <th>User Name</th>
+                                                <th>EventDate</th>
+                                                <th>Event Type</th>
+                                                <th>Column Name</th>
+                                                <th>Original Value</th>
+                                                <th>New Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="item in AuditData">
+                                            <tr>
+                                                <td style="display:none">
+                                                    {{item.AuditLogID}}
+                                                </td>
+                                                <td>
+                                                    {{item.UserID}}
+                                                </td>
+                                                <td>
+                                                    {{item.EventDateUTC}}
+                                                </td>
+                                                <td>
+                                                    {{item.EventType}}
+                                                </td>
+                                                <td>
+                                                    {{item.ColumnName}}
+                                                </td>
+                                                <td>
+                                                    {{item.OriginalValue}}
+                                                </td>
+                                                <td>
+                                                    {{item.NewValue}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <!-- <script src="../vendors/DateJS/build/date.js"></script>-->
+    <script src="~/build/js/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/Scripts/tableToExcel.js"></script>  
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dtFromToDate,#dtFromDate,#dtFromDate1').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 1,            
+            locale: {
+                format: 'MM/DD/YYYY H:mm'
+            }
+        });        
+
+        //$('input[name="datetimes"]').daterangepicker({
+        //    //autoUpdateInput: false,
+        //    timePicker: true,
+        //    timePicker24Hour: true,
+        //    timePickerIncrement: 30,
+        //    locale: {
+        //        format: 'MM/DD/YYYY H:mm',
+        //        cancelLabel: 'Clear'
+        //    }
+        //});
+
+        $('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY H:mm') + ' - ' + picker.endDate.format('MM/DD/YYYY H:mm'));
+        });
+
+        $('input[name="datetimes"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+        StoreToken();
+    });
+    if ("@Session["CpUrl"].ToString()"){
+        localStorage.setItem("CpUrl", '@Session["CpUrl"].ToString().Trim()');
+    }
+    if("@Session["SiteId"].ToString()"){
+        localStorage.setItem("SiteId", '@Session["SiteId"]');
+    }
+    if("@Session["SiteName"].ToString()"){
+        localStorage.setItem("SiteName", '@Session["SiteName"]');
+    }
+
+    localStorage.setItem("UserId", '@this.User.Identity.GetUserId()');
+    localStorage.setItem("NetworkSiteIds", "@ViewBag.NetworkListSSIds");
+
+    var checkedItems = 0;
+    var checkBoxValueItme = [];
+
+    function ShowHideDiv(chkPassport) {
+
+        //debugger;
+        $("input:checkbox[name=type]:checked").each(function () {
+            checkBoxValueItme.push({ UserId: $(this).val() });
+        });
+        var partialViewUserDetails = document.getElementById("dvPassport");
+        var partialViewAddGroup = document.getElementById("AddGroup");
+        if (chkPassport.checked) {
+            checkedItems++;
+        }
+        else {
+            checkedItems--;
+        }
+        if (checkedItems == 1) {
+            partialViewUserDetails.style.display = "block";
+            partialViewAddGroup.style.display = "none";
+
+        }
+        else if (checkedItems >= 2) {
+            partialViewUserDetails.style.display = "none";
+            partialViewAddGroup.style.display = "block";
+        }
+        else if (checkedItems == 0) {
+            partialViewUserDetails.style.display = "none";
+            partialViewAddGroup.style.display = "none";
+
+        }
+    }
+</script>
+<script src="~/Scripts/angular.js"></script>
+<script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+<script src="~/CaptivePortal_Angular/Controllers/ManageWifiUserController.js"></script>
+<script src="~/CaptivePortal_Angular/Services/ManageWifiUserService.js"></script>
+<script src="~/Scripts/Home_Index.js"></script>

@@ -1,0 +1,110 @@
+﻿@{
+   ViewBag.Title = "LocationMapping";
+   Layout = "~/Views/Shared/LocationDashboardPartialView/_CommonLayout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en" ng-app="a8DashboardModule">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+</head>
+<body class="nav-md" ng-controller="LocationIndicatorController">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" id="content" ng-init="getIndex()">
+                <form></form>
+                <p style="text-align: right; width: 100%;">
+                    <input type="button" class="btn btn-success" value="Add new" onclick="location.href='@Url.Action("CreateLocation", "LocationIndicators")'">
+                </p>
+                <table class="table">
+                    <tr>
+                        <th>
+                            AreaOfInterestId
+                        </th>
+                        <th>
+                            @* @Html.DisplayNameFor(model => model.Name)*@
+                            Name
+                        </th>
+                        <th>
+                            @* @Html.DisplayNameFor(model => model.LoctionIndicator)*@
+                            LocationIndicator
+                        </th>
+                        <th>
+                            @* @Html.DisplayNameFor(model => model.NeighBourName)*@
+                            NeighBourName
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @*@foreach (var item in Model)
+                        {*@
+                    <tr ng-repeat="item in locationIndiCatorDetails">
+                        <td id="AreaOfInterestId">
+                            @* @Html.DisplayFor(modelItem => item.AreaOfInterestId)*@
+                            {{item.AreaOfInterestId}}
+                        </td>
+
+                        <td>
+                            @* @Html.DisplayFor(modelItem => item.Name)*@
+                            {{item.Name}}
+                        </td>
+                        <td>
+                            @*   @Html.DisplayFor(modelItem => item.LoctionIndicator)*@
+                            {{item.LoctionIndicator}}
+                        </td>
+                        <td>
+                            @*  @Html.DisplayFor(modelItem => item.NeighBourName)*@
+                            {{item.NeighBourName}}
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-success" value="Edit" ng-click="edit(item.AreaOfInterestId)">
+
+                            <input type="button" class="btn btn-danger" value="Delete" ng-click="delete(item.AreaOfInterestId)" />
+                            @* @Html.ActionLink("Edit", "Edit", new { id = item.AreaOfInterestId, SiteName = Request.QueryString["SiteName"].ToString() }, new { @class = "btn btn-primary", @style = "color:white" })*@
+
+                            @*@Html.ActionLink("Delete", "Delete", new { id = item.AreaOfInterestId, SiteName = Request.QueryString["SiteName"].ToString() }, new { @class = "btn btn-primary", @style = "color:white" })*@
+                            @*<form action="/LocationIndicators/Delete" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" value="@item.AreaOfInterestId" name="AreaOfInterestId" />
+                                    <input type="hidden" value="@Request.QueryString["SiteName"]" name="SiteName" />
+                                    <input type="submit" value="Delete" class="btn btn-primary" />
+                                </form>*@
+                        </td>
+
+                    </tr>
+                    @*}*@
+
+                </table>
+
+
+            </div>
+
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer></footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/a8Dashboard_Angular/Controllers/LocationIndicatorController.js"></script>
+    <script src="~/a8Dashboard_Angular/Services/LocationIndicatorService.js"></script>
+</body>
+</html>
+<script>
+    $(document).ready(function(){
+        navigation();
+    })
+    var siteId = localStorage.getItem("SiteId");
+    var siteName = localStorage.getItem("SiteName");
+    document.getElementsByTagName('form')[0].innerHTML = siteName;
+</script>

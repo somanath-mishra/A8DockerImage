@@ -1,0 +1,27 @@
+﻿body {
+}
+.control-label{
+    color:black;
+    font-size:14px;
+}
+thead{
+    color:black;
+    font-size:14px;
+}
+td {
+    border: 1px #DDD solid;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.selectedindex {
+    background-color: #f6bdbd;
+    color: black;
+}
+.highlight {
+    background-color: red;
+}
+.cellContainer {
+    width: 33.333%;
+    float: left;
+}

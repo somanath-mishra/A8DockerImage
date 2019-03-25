@@ -1,0 +1,178 @@
+﻿@using Microsoft.AspNet.Identity;
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Content/bootstrap-multiselect.css" rel="stylesheet" />
+    <link href="~/Vendors/datatable/grid.css" rel="stylesheet" />
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/Content/ajaxSpinner.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" style="min-height: 751px;">
+                <div id="ajaxSpinnerContainer">
+                    <img src="/build/images/loading.gif" id="ajaxSpinnerImage" title="loading..." />
+                </div>
+                <div class="container">
+                    <div class="panel-body">
+                        <div>
+                            <div role="grid">
+                                <div class="row">
+                                    <div class="col-sm-12 pq-grid-title ui-corner-top">
+                                        <form class="form-inline" id="searchForm">
+                                            <div class="row">
+                                                <div class="col-md-4 col-sm-4 col-lg-3 col-xs-6 form-group">
+                                                    <label for="Site" class="control-label col-lg-6 col-md-6 col-sm-6" style="text-align:right">Select SSID:</label>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        @Html.DropDownList("NetWorkOfSiteId", ViewBag.Ssids as IEnumerable<SelectListItem>, new { @class = "form-control", @id = "SsidDdl", @name = "NetWorkOfSiteId", @required = "required" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5 col-sm-5 col-lg-4 col-xs-6 form-group" style="display:none" id="divSponsors">
+                                                    <label for="Site" class="control-label col-lg-6 col-md-6 col-sm-6" style="text-align:right">Select Sponsor:</label>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6" id="Sponsor">
+                                                        <select id='SponsorDdl' multiple="multiple"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 col-sm-3 col-lg-2 col-xs-4 form-group">
+                                                    <label for="text">Show:</label>
+                                                    <select class="form-control NumberOfRecord" name="NumberOfRecord" id="NumberOfRecord">
+                                                        <option value="20">20</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-1 col-sm-1 col-lg-1 ol-xs-2 form-group">
+                                                    <input type="button" value="Find" id="btnFind" class="btn btn-success" />
+                                                </div>
+                                                <div class="col-md-2 col-sm-2 col-lg-2 col-xs-3 form-group">
+                                                    <input type="button" value="Export" id="btnExport" class="btn btn-success" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="pq-grid">
+                                        <div id="dataTables-example_wrapper" class="dataTables_wrapper" role="grid">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="dataTables_length" id="dataTables-example_length"><label><select name="dataTables-example_length" aria-controls="dataTables-example" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> records per page</label></div>
+                                                </div><div class="col-sm-6"></div>
+                                            </div>
+                                            <div class="dataTables_scroll">
+                                                <div class="dataTables_scrollHead ui-state-default" style="overflow: hidden; position: relative; border: 0px; width: 100%;">
+                                                    <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;">
+                                                        <div class="dataTables_scrollBody" style="overflow: auto; height: 450px;">
+                                                            <div class="row container-fluid">
+                                                                <div style="top:35px;" class="table-responsive">
+                                                                    <table class="table" id="table">
+                                                                        <thead>
+                                                                            <tr style="background-color:#ccc;color:black">
+                                                                                <th style="display:none;">UserId</th>
+                                                                                <th style="display:none;">Sponsors</th>
+                                                                                <th>
+                                                                                    Username
+                                                                                </th>
+                                                                                <th>
+                                                                                    FirstName
+                                                                                </th>
+                                                                                <th>
+                                                                                    Surname
+                                                                                </th>
+                                                                                <th>
+                                                                                    Created Date<br />
+                                                                                    <input type="text" id="dtFromDate" name="datetimes" class="form-control" style="width:100%">
+                                                                                </th>
+                                                                                <th>
+                                                                                    Last Login<br />
+                                                                                    <input type="text" id="dtFromDate1" name="datetimes" class="form-control" style="width:100%">
+                                                                                </th>
+                                                                                <th>
+                                                                                    Age Range
+                                                                                </th>
+                                                                                <th>
+                                                                                    Sponsors Approved
+                                                                                </th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody class="pointer" id="cpLocalAdminUserTable" style="cursor: pointer"></tbody>
+                                                                    </table>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pagination-container" id="pagination-container">
+                                                <div id="show_paginator"></div>
+                                                <ul class="pagination pagination-sm" id="pagination"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" class="TotalPage" name="TotalPage" id="TotalPage" value="">
+    <input type="hidden" class="CurrentPage" name="CurrentPage" id="CurrentPage" value="1">
+    <input type="hidden" class="RecordToDisply" name="RecordToDisply" id="RecordToDisply" value="">
+    <input type="hidden" class="TotalRecords" name="TotalPage" id="TotalRecords" value="">
+    <input type="hidden" class="IsExportToExcel" name="IsExportToExcel" id="IsExportToExcel" value="false">
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <!-- <script src="../vendors/DateJS/build/date.js"></script>-->
+    <script src="~/build/js/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/Home_Index.js"></script>
+    <script src="~/Scripts/tableToExcel.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/bootstrap-multiselect.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/Scripts/custompagination.js"></script>
+    <script src="~/Scripts/wifiuserdetails.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input[name="datetimes"]').daterangepicker({
+            autoUpdateInput: false,
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 30,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+        $('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('MM-DD-YYYY H:mm:ss') + ' - ' + picker.endDate.format('MM-DD-YYYY H:mm:ss'));
+        });
+
+        $('input[name="datetimes"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        getWifiUsers();
+
+        navigation();
+
+        //getWifiUsers();
+    });
+</script>

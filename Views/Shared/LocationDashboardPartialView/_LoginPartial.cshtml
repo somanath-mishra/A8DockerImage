@@ -1,0 +1,47 @@
+﻿@if (User.IsInRole("GlobalAdmin"))
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                @Html.ActionLink("Welcome " + User.Identity.GetUserName() + "", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()" class="btn" id="logoutBtn">Log out</a></li>
+        </ul>
+                    <div class="container">
+                        <div>
+                            <div>
+
+                                @* <a href="@Url.Action("Register")" class="btn tes-btn-default pull-right" style="left:20px;">New Owner</a>*@
+                                @* @Html.ActionLink("Create New User", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })*@
+                                <input type="button" id="registerLink" class="btn" value="Create New User" />
+
+                            </div>
+                        </div>
+                    </div>
+    }
+    <input type="button" id="logbtn" value="Download Logs" class="btn tes-btn-default pull-right" />
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        @*<li>@Html.ActionLink("Create New User", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#logbtn').click(function () {
+            var downloadUrl = "@Url.Action("LogsDownload","DashBoard")";
+            window.location.href = downloadUrl;
+        });
+
+        $("#registerLink").click(function () {
+            var url = '/Account/Register';
+            $(location).attr('href', url);
+        });
+    });
+</script>
+

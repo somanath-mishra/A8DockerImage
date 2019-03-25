@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <script src="~/build/js/index.js"></script>
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- /top navigation -->
+            <!-- page content -->
+            <div class="right_col" role="main" style="left:30%">
+                <div style="width:80%">
+                    @Html.Action("GetRTLSLogs", "RTLS")
+                </div>
+            </div>
+            <footer></footer>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        navigation();
+    })
+    </script>
+</body>
+</html>

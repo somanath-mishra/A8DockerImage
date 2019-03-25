@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "LocationData";
+}
+<body>
+    <input type="hidden" class="SiteName" name="SiteName" id="hdnSiteName" />
+    <input type="hidden" class="TotalPage" name="TotalPage" id="TotalPage" />
+    <input type="hidden" class="CurrentPage" name="CurrentPage" id="CurrentPage" value="0" />
+    <input type="hidden" class="RecordToDisply" name="RecordToDisply" id="RecordToDisply" value="10" />
+    <input type="hidden" class="TotalRecords" name="TotalPage" id="TotalRecords" value="10000" />
+    <br /><br /><br />
+    <div class="form-group row">
+        <div class="col-xs-2">
+            <label for="filterbtn"></label>
+            <input class="btn-success form-control" id="filterbtn" type="button" value="Filter" onclick="filter()">
+        </div>
+        <div class="col-xs-3">
+            <label for="IdMacAddress">MacAddress</label>
+            <input class="form-control" id="IdMacAddress" type="text">
+        </div>
+        <div class="col-xs-3">
+            <label for="IdArea">Area</label>
+            <input class="form-control" id="IdArea" type="text">
+        </div>
+        <div class="col-xs-2">
+            <label for="exportdatabtn"></label>
+            <input class="btn-success form-control" id="exportdatabtn" data-export="export" onclick="exportTableToCSV('RtlsData.csv')" type="button" value="Export Data">
+        </div>
+        <div class="col-xs-2">
+            <label for="dropdownfordelete">Delete After</label>
+            <select class="dropdownfordelete selectpicker form-control" name="dropdownfordelete" id="dropdownfordelete">
+                <option value="0">SELECT</option>
+                <option value="6">6 Hours</option>
+                <option value="12">12 Hours</option>
+                <option value="24">1 Day</option>
+                <option value="168">1 Week</option>
+                <option value="1">Never</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="dataTables_length" id="divRecordToDisply">
+        <label>Show <select name="NumberOfRecord" class="NumberOfRecord"><option value="5">5</option><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> Records</label>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-12 table-responsive">
+        <div class="body-content">
+            <table class="table" id="MacAddressTable">
+                <thead>
+                    <tr>
+                        <th>MacAddress</th>
+                        <th>UserName</th>
+                        <th>NotificationDateTime</th>
+                        <th>NotificationSenderDateTime</th>
+                    </tr>
+                </thead>
+                <tbody id="macDetails"></tbody>
+            </table>
+            <div class="pagination-container" id="pagination-container">
+                <div id="show_paginator"></div>
+                <ul class="pagination pagination-sm" id="pagination"></ul>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/moment.min.js"></script>
+<script src="~/Rtls_Js/LocationData.js"></script>
+<script src="~/Scripts/tableToExcel.js"></script>
+<script src="~/Scripts/tableToCSV.js"></script>
+<script type="text/javascript">
+    var separatorAdded = false;
+    var start, end, pagesCutOff = 5
+    function getPagelist(total, page,pagesize, maxvisible) {
+        var totalPage = (total + pagesize - 1) / pagesize;
+        $('#TotalPage').val(totalPage);
+
+        $('#pagination').empty();
+        var strAppendData = '';
+        strAppendData += '<li><a href="javascript:previous();">&laquo;</a></li>';
+        for (i = 1; i <= totalPage; i++) {
+            if (i == page) {
+                strAppendData += '<li data-val=' + i + '  class ="active"><a href="javascript:go_to_page(' + (i-1) + ')">' + i + '</a></li>';
+            } else {
+                if (isPageInRange(page, i, totalPage, 2, 2, maxvisible)) {
+                    strAppendData += '<li data-val=' + i + '><a  href="javascript:go_to_page(' + (i - 1) + ')">' + i + '</a></li>';
+                    separatorAdded = false;
+                } else {
+                    if (!separatorAdded) {
+                        strAppendData += '<li class="disabled" ><a  href="javascript:void(0)">...</a></li>';
+                        separatorAdded = true;
+                    }
+                }
+            }
+        }
+        strAppendData += '<li><a href="javascript:next();">&raquo;</a></li>';
+
+        $('#pagination').append(strAppendData);
+        $('#show_paginator').empty();
+        var htm_ = "[ "+ page + " Of " + Math.floor( totalPage) + " Page ]" ;
+        $('#show_paginator').append(htm_);
+
+    }
+
+    function isPageInRange(curPage, index, maxPages, pageBefore, pageAfter, maxvisible) {
+        if (index <= 2) {
+            return true;
+        }
+        if (index >= maxPages -  2) {
+            return true;
+        }
+        if (index >= curPage - pageBefore && index <= curPage + pageAfter  ) {
+            return true;
+        }
+    }
+
+    function previous() {
+
+        new_page = parseInt($('#CurrentPage').val()) - 1;
+        //if there is an item before the current active link run the function
+        if ((new_page-1) >= 0) {
+            go_to_page(new_page-1);
+        }
+
+    }
+
+    function next() {
+        new_page = parseInt($('#CurrentPage').val()) + 1;
+        var maxpage = parseInt($('#TotalPage').val());
+        //if there is an item after the current active link run the function
+        if (new_page<=maxpage) {
+            go_to_page(new_page-1);
+        }
+
+    }
+
+</script>

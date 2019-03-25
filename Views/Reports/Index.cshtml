@@ -1,0 +1,35 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/UsageController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/UsageService.js"></script>
+
+    <style>
+        .selected {
+            background-color: #f6bdbd;
+        }
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body" ng-controller="UsageController" ng-init="GetSSID()">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <div class="right_col" role="main" style="min-height: 751px;">
+               
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+   
+</script>
+
+

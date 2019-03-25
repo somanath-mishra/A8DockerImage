@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title </title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+        #foo {
+            bottom: 0;
+            right: 0;
+            float: right;
+            margin-right: -100px;
+        }
+    </style>
+</head>
+
+<body>
+    @*@if (Request.IsAuthenticated)
+    {*@
+        <div class="navbar navbar-inverse navbar-fixed-top" style="border-color: #e7e7e7;width:100%; background-color: #f8f8f8;">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @*@Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
+                    <a href="@Url.Action("Login", "Account", null)"><img src="~/Images/airloc8_logo.svg" class="navbar-brand" style="width: 120px;"></a>
+                    <div style="float:left" id="title_content">
+                        <h2 style="color:rgb(128,0,0);font-size:18px;"></h2>
+                    </div>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <div class="dropdown" id="ddManage" style="margin-left:150px;float:left;">
+                        <button class="dropbtn dropdown-toggle">Manage<span class="caret" style="margin-left:130px;border-top-color: white;"></span></button>
+                        <div class="dropdown-content">
+                            <a href="@Url.Action("uploadfilename", "DashBoard", null)">Upload Filename</a>
+                            <a href="@Url.Action("Index", "DashBoard", null)">DashBoard</a>
+                        </div>
+                    </div>
+                    <ul class="nav navbar-nav">
+                        @*<li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                    </ul>
+                    @Html.Partial("~/Views/Shared/LocationDashboardPartialView/_LoginPartial.cshtml")
+                </div>
+            </div>
+        </div>
+    @*}*@
+ 
+    <div class="container body-content">
+        <br/>
+        @RenderBody()
+    </div>
+
+    <div class="no-footer">
+        <p>&copy; @DateTime.Now.Year - airLoc8.@System.Configuration.ConfigurationManager.AppSettings["ReleaseNumber"]</p>
+        <p style="margin-left: 80%;margin-top: -30px;">Deployment Date @System.Configuration.ConfigurationManager.AppSettings["DeploymentDate"] </p>
+    </div>
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

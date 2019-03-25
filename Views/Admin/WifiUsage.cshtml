@@ -1,0 +1,274 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <script src="~/Vendors/Chart.js/dist/Chart.min.js"></script>
+    <script src="~/Vendors/Chart.js/dist/Chart.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+ <div class="container body">
+   <div class="main_container">
+    @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+     <style type="text/css">
+         .x_title h2 {
+             overflow: inherit;
+         }
+     </style>
+ <!-- page content -->
+   <div class="right_col" role="main">
+                <!-- top tiles -->
+                <div class="row tile_count">
+                    <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                        <span class="count_top"><i class="fa fa-arrow-up"></i> Total Usage Up(MB)</span>
+                        <div class="count maroon" id="totalUsageUp">0</div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                        <span class="count_top"><i class="fa fa-arrow-down"></i> Total Usage Down(MB)</span>
+                        <div class="count orange" id="totalUsageDown">0</div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                        <span class="count_top"><i class="fa fa-tachometer"></i> Average Usage/Session</span>
+                        <div class="count yellowbrand" id="AvgUsageSession">0</div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                        <span class="count_top "><i class="fa fa-user-plus"></i> Peak Usage In Period</span>
+                        <div class="count redbrand" id="PeakUsageInPeriod">0</div>  
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-xs-12">
+                            <div class="row">
+                                <div class="col-sm-2 col-md-4 col-xs-4">
+                                    <select class="form-control" id="ddlSelect" onclick="ShowHideDateControl(this.value)">
+                                        <option value="0">CurrentDate(the last 24 hours)</option>
+                                        <option value="1">Weekly(the last 7 days)</option>
+                                        <option value="2">Monthly(the last 30 – 31 days)</option>
+                                        <option value="3">Yearly(the last 12 months)</option>
+                                        <option value="4">Custom</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 col-md-4 col-xs-4 form-group" id="dateGroup" style="display:none">
+                                    <div class="col-sm-4 col-md-8 col-xs-8">
+                                        <input type="text" id="inpDatePicker" name="datetimes" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-md-4 col-xs-4 form-group">
+                                    <input type="submit" value="Search" class="btn btn-success" onclick="GenerateReport()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <!-- /top tiles -->
+
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="dashboard_graph">
+                            <div class="row x_title">
+                                <div class="col-md-6">
+                                    <h2>Usage Up During Period</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="UsageUpAreaChartContainer">
+                                <canvas id="UsageUpAreaChart" @*style="margin: 15px 10px 10px 0"*@></canvas>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="dashboard_graph">
+                            <div class="row x_title">
+                                <div class="col-md-6">
+                                    <h2>Usage Down During Period</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="UsageDownAreaChartContainer">
+                                <canvas id="UsageDownAreaChart" @*style="margin: 15px 10px 10px 0"*@></canvas>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="x_panel tile fixed_height_390 overflow_hidden">
+                            <div class="x_title">
+                                <h2>Session Active During Period</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div>
+                                <div id="SessionActiveAreaChartContainer">
+                                    <canvas id="SessionActiveAreaChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-md-3 col-sm-3 col-xs-12">
+                        <div class="x_panel tile fixed_height_390">
+                            <div class="x_title">
+                                <h2>Gender Demographics</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div>
+                                <div id="GenderPieChartContainer">
+                                    <canvas id="GenderPieChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <table class="tile_info hide" id="tbl_GenderDetails" align="center">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Gender Type
+                                            </th>
+                                            <th>
+                                                Counts
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding-right: 50px;">
+                                                <span><i class="fa fa-square purple"></i>Male</span>
+                                            </td>
+                                            <td id="totalMaleUsers"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-right: 50px;">
+                                                <span><i class="fa fa-square green"></i>Female </span>
+                                            </td>
+                                            <td id="totalFemaleUsers"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-right: 50px;">
+                                                <span><i class="fa fa-square aero"></i>Not Answered </span>
+                                            </td>
+                                            <td id="totalNotAnswered"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12">
+                        <div class="x_panel tile fixed_height_390 overflow_hidden">
+                            <div class="x_title">
+                                <h2>Device Usage</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div id="PiechartContainer">
+                                    <canvas id="PieChart"></canvas>
+                                </div>
+                                <div>
+                                    <table class="tile_info hide" id="tbl_DeviceDetails" align="center">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Device
+                                                </th>
+                                                <th>
+                                                    Counts
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding-right: 50px;">
+                                                    <span><i class="fa fa-square blue"></i>IOS</span>
+                                                </td>
+                                                <td id="rowIOS"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-right: 50px;">
+                                                    <span><i class="fa fa-square green"></i>Android </span>
+                                                </td>
+                                                <td id="rowAndroid"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-right: 50px;">
+                                                    <span><i class="fa fa-square aero"></i>Window </span>
+                                                </td>
+                                                <td id="rowWindow"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-right: 50px;">
+                                                    <spa><i class="fa fa-square red"></i>Others </spa>
+                                                </td>
+                                                <td id="rowOthers"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12">
+                        <div class="x_panel tile fixed_height_390">
+                            <div class="x_title">
+                                <h2>Network Usage (In MB)</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div>
+                                <div id="NetwotkPieChartContainer">
+                                    <canvas id="NetworkPieChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h2>Total Bandwidth (In MB): <span id="TotalBandWidth"></span></h2>
+                            </div>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/CustomGraph.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    function ShowHideDateControl(val) {
+        if (val == 4) {
+            $("#dateGroup").css('display', 'block');
+        }
+        else {
+            $("#dateGroup").css('display', 'none');
+        }
+    }
+
+    $(document).ready(function () {
+       
+
+        $('#inpDatePicker').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 30,
+            locale: {
+                format: 'MM/DD/YYYY H:mm'
+            }
+        });
+
+        navigation();
+    });
+
+</script>
+

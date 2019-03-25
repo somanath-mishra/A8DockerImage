@@ -1,0 +1,248 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<head>
+    @*<script src="~/Scripts/jquery.bootpag.min.js"></script>*@
+</head>
+<div class="navbar-fixed-top">
+    <div class="row col-lg-12 col-sm-12 col-md-12 text-center">
+        @*<h4>Real Time Location Services-API administrator</h4>*@
+    </div>
+  </div>
+<br /><hr />
+<div class="container">
+    <h4>Site Configuration</h4>
+    <form name="fromRtlsConfig" id="fromRtlsConfig">
+        @*<div class="row">
+            <div class="form-group col-md-6 col-lg-6 col-sm-6">
+                @*<label class="col-md-4 col-lg-4 col-sm-4">Choose the Rtls Engine</label>
+                <div class="col-md-4 col-lg-4 col-sm-4">
+                    <select id="rtlsEngine" class="form-control">
+                        <option>--Select--</option>
+                        <option value="1">Engage Engine</option>
+                        <option value="2">Omni Presence Engine</option>
+                    </select>
+                </div>                
+            </div>  
+        </div>*@          
+
+        <div class="row">
+            <input type="hidden" class="RtlsConfigurationId" name="RtlsConfigurationId" id="hdnRtlsConfigurationId" />
+            <input type="hidden" class="SiteId" name="SiteId" id="hdnSiteId" />
+            <input type="hidden" class="SiteName" name="SiteName" id="hdnSiteName" />
+            <input type="hidden" class="TotalPage" name="TotalPage" id="TotalPage" />
+            <input type="hidden" class="CurrentPage" name="CurrentPage" id="CurrentPage" value="0" />
+            <input type="hidden" class="RecordToDisply" name="RecordToDisply" id="RecordToDisply" value="10" />
+            <input type="hidden" class="TotalRecords" name="TotalPage" id="TotalRecords" value="1000" />
+
+            <div class="col-md-2 col-lg-2 col-sm-2">
+                <select id="rtlsEngine" name="RtlsEngineType" class="form-control">
+                    <option>--Select--</option>
+                    <option value="1">Engage Engine</option>
+                    <option value="2">Omni Presence Engine</option>
+                </select>
+            </div>  
+
+            <div id="dvOmniEngine" style="display:none">
+                <div class="form-group col-md-2 col-lg-2 col-sm-2">
+                    <input type="text" name="OmniBaseAddressUri" id="txtOmniBaseAddressUri" class="form-control" placeholder="Enter the Omni Url" required />
+                </div>
+            </div>
+            <div id="dvEngageEngine" style="display:none">
+                <div class="form-group col-md-2 col-lg-2 col-sm-2">
+                    <input type="text" name="EngageBuildingName" id="txtEngageBuildingName" placeholder="Enter the Building Name" class="form-control" required />
+                </div>
+                <div class="form-group col-md-2 col-lg-2 col-sm-2">
+                    <input type="text" name="EngageSiteName" id="txtEngageSiteName" class="form-control" placeholder="Enter the Site Name" required />
+                </div>
+                <div class="form-group col-md-3 col-lg-3 col-sm-3">
+                    <input type="text" name="EngageBaseAddressUri" id="txtEngageBaseAddressUri" class="form-control" placeholder="Enter the Engage Url" required />
+                </div>
+            </div>
+                        
+            <div class="form-group col-md-2 col-lg-2 col-sm-2">
+                <input type="button" value="Save Updates" class="btn btn-success" id="btnRtlsConfiguration" />
+            </div>
+        </div>
+
+        <br />
+        <br /><hr />
+        <h4>Save Devices MacAddress</h4>
+        <div class="row col-lg-10 col-sm-10 col-md-10">
+            <div class="col-md-3 col-lg-3 col-sm-3">
+                <input type="text" id="txtMacDevices" name="MacAddresses" maxlength="17" class="form-control">
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3">
+                <input type="button" class="btn btn-success" value="Save" name="Command" title="Save" id="btnSave">
+            </div>
+        </div>
+    </form>
+       @*<br />*@<hr />
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-lg-offset-3">
+            <div>
+                <!--call the api for register as per the selection-->
+                <input type="button" class="btn btn-success col-lg-1 BtnChkSelect" value="Register" id="btnRegister" title="Register" disabled>
+                <input type="button" class="btn btn-success col-lg-1" value="De-Register" id="btnDeRegister" title="De-Registe">
+                <input type="button" class="btn btn-success col-lg-2 BtnChkSelect" value="Delete Mac Address" id="btnDeleteMac" title="Delete Mac Address" disabled />
+                <input type="button" class="btn btn-success col-lg-2" value="Check Register" id="btnCheckRegister" title="Check Register" />
+                <input type="button" class="btn btn-success col-lg-2" value="Get Latest Position" id="btnGetLatestPosition" title="Get Latest Position" />
+            </div>
+        </div>
+    </div>
+        
+        @*<br />*@<br />
+    <div class="dataTables_length" id="divRecordToDisply">
+    <label>Show <select name="NumberOfRecord" class="NumberOfRecord"><option value="5">5</option><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> Records</label></div>
+        <div class="col-sm-12 col-md-12 col-lg-12 table-responsive">
+            <div class="body-content">
+                <table class="table" id="MacAddressTable" >
+                    <thead>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>
+                                Mac Address
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Created by Admin
+                            </th>
+                            <th>
+                                Email Address
+                            </th>
+                            <th>
+                                FirstName
+                            </th>
+                            <th>
+                                LastName
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="macDetails"></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>
+                                Mac Address
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Created by Admin
+                            </th>
+                            <th>
+                                Email Address
+                            </th>
+                            <th>
+                                FirstName
+                            </th>
+                            <th>
+                                LastName
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="pagination-container" id="pagination-container">
+                    <div id="show_paginator"></div>
+                    <ul class="pagination pagination-sm" id="pagination"></ul>
+                    
+                </div>
+            </div>
+      </div>
+    </div>
+ <script src="~/Rtls_Js/RtlsSetup.js"></script>
+
+<script>
+    var separatorAdded = false;
+    var start, end, pagesCutOff = 5
+
+
+    function getPagelist(total, page,pagesize, maxvisible) {
+        var totalPage = (total + pagesize - 1) / pagesize;
+        $('#TotalPage').val(totalPage);
+     
+        $('#pagination').empty();
+        var strAppendData = '';
+        strAppendData += '<li><a href="javascript:previous();">&laquo;</a></li>';
+        for (i = 1; i <= totalPage; i++) {
+            if (i == page) {
+                strAppendData += '<li data-val=' + i + '  class ="active"><a href="javascript:go_to_page(' + (i-1) + ')">' + i + '</a></li>';
+            } else {
+                if (isPageInRange(page, i, totalPage, 2, 2, maxvisible)) {
+                    strAppendData += '<li data-val=' + i + '><a  href="javascript:go_to_page(' + (i - 1) + ')">' + i + '</a></li>';
+                    separatorAdded = false;
+                } else {
+                    if (!separatorAdded) {
+                        strAppendData += '<li class="disabled" ><a  href="javascript:void(0)">...</a></li>';
+                        separatorAdded = true;
+                    }
+                }
+            }
+        }
+        strAppendData += '<li><a href="javascript:next();">&raquo;</a></li>';
+
+        $('#pagination').append(strAppendData);
+        $('#show_paginator').empty();
+        var htm_ = "[ "+ page + " Of " + Math.floor( totalPage) + " Page ]" ;
+        $('#show_paginator').append(htm_);
+        
+    }
+     
+    function isPageInRange(curPage, index, maxPages, pageBefore, pageAfter, maxvisible) {
+        if (index <= 2) {
+            return true;
+        }
+        if (index >= maxPages -  2) {
+            return true;
+        }
+        if (index >= curPage - pageBefore && index <= curPage + pageAfter  ) {
+            return true;
+        }
+    }
+
+    function previous() {
+
+        new_page = parseInt($('#CurrentPage').val()) - 1;
+        //if there is an item before the current active link run the function
+        if ((new_page-1) >= 0) {
+            go_to_page(new_page-1);
+        }
+
+    }
+
+    function next() {
+        new_page = parseInt($('#CurrentPage').val()) + 1;
+        var maxpage = parseInt($('#TotalPage').val());
+        //if there is an item after the current active link run the function
+        if (new_page<=maxpage) {
+            go_to_page(new_page-1);
+        }
+
+    }
+
+    $(function () {
+        $("#rtlsEngine").change(function () {
+            if ($(this).val() == "1") {
+                $("#dvEngageEngine").show();
+                $("#dvOmniEngine").hide();
+            } else if ($(this).val() == "2") {
+                $("#dvEngageEngine").hide();
+                $("#dvOmniEngine").show();
+            }
+            else {
+                $("#dvOmniEngine").hide();
+                $("#dvEngageEngine").hide();
+            }
+        });
+    });
+    
+</script>
+
+
+

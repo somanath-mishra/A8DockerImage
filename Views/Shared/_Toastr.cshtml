@@ -1,0 +1,6 @@
+﻿@using A8PlatForm.Domains.Enums;
+@if (TempData.ContainsKey("Toastr"))
+{
+    Toastr toastr = TempData["Toastr"] as Toastr;
+    @ToastrBuilder.ShowToastMessages(toastr);
+}

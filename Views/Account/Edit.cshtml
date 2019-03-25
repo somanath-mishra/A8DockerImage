@@ -1,0 +1,193 @@
+﻿@model A8PlatForm.Domains.CustomIdentity.ApplicationUser
+@{
+    ViewBag.Title = "EditUser";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/CheckBox.css" rel="stylesheet" />
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+    <script src="~/build/js/index.js"></script>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <form>
+                                        @ViewBag.CompanyName
+                                    </form>
+                                    <br />
+                                    <div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                        @if (TempData["Success"] != null)
+                                        {
+                                            <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+                                        }
+                                        @using (Html.BeginForm("EditUserWithRole", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            @*<form>*@
+                                            <div class="form-group">
+                                                
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.HiddenFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                                                    
+                                                </div>
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label for="Email" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">Email:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="FirstName" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">FirstName:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.EditorFor(model => model.ForeName, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.ForeName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="LastName" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">LastName:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="Role" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">Role:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.DropDownListFor(model => model.Roles.FirstOrDefault().RoleId, ViewBag.Roles as IEnumerable<SelectListItem>, "--Select the Role--", new { @class = "form-control" })
+                                                    @*@Html.EditorFor(model => model.Roles, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    @Html.ValidationMessageFor(model => model.Roles, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="RestrictedSite" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Default Site:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.DropDownListFor(model => model.SiteId, ViewBag.Sites as IEnumerable<SelectListItem>, "--Select the Site--", new { @class = "form-control", @id = "dropdown", @name = "SiteId", @Selected = true, @required = "required" })
+                                                   @*@Html.DropDownList("siteDdl", ViewBag.sites as IEnumerable<SelectListItem>, "--Select the Site--", new { @class = "form-control", @id = "dropdown", @name = "SiteDdl", @Selected = true, @required = "required" })*@
+
+                                                    @Html.ValidationMessageFor(model => model.SiteId, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="Site_Access" class="control-label col-md-3 col-sm-3 col-xs-12">Site Access:</label>
+                                                    <div id='checkbox' class="col-md-6 col-sm-6 col-xs-12">
+                                                        @foreach (var item in ViewBag.sites as IEnumerable<SelectListItem>)
+                                                        {
+                                                            //int index = Model.SiteViewlist.IndexOf(item);
+                                                            string checkBoxId = "Id_CheckBox_" + @item.Value;
+                                                            <div data-id="">
+                                                                <div for=@checkBoxId><input id=@checkBoxId name="RestrictedSites" type="checkbox" class="checkBoxSites" value=@item.Value /> @item.Text</div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                        <input type="button" id="Cancel" class="btn btn-danger" value="Cancel" onclick="cancel()"/>
+                                                        <input type="submit" id="Save" class="btn btn-success" value="Save" />
+                                                    </div>
+                                                </div>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /page content -->
+        <!-- footer content -->
+        <footer>
+
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+
+</body>
+</html>
+<script type="text/javascript">
+
+
+    var siteId = localStorage.getItem("SiteId");
+    var siteName = localStorage.getItem("SiteName");
+   // document.getElementsByTagName('form')[0].innerHTML = siteName;
+
+    $(function () {
+        $("#SiteDdl").change(function () {
+            if ($(this).val() != "") {
+                $('#restrictedSiteDdl').val('');
+                var id = $(this).val();
+                $.getJSON("/Admin/GetRestrictedSite?siteId=" + id, function (data) {
+                    var items = [];
+                    $.each(data, function (key, value) {
+                        items.push("<option value=" + this.value + ">" + this.text + "</option>");
+                    });
+                    $("#restrictedSiteDdl").html(items.join(' '));
+                });
+            }
+        });
+
+        $("#dropdown").change(function () {
+            var index = $(this).val();
+            //        $("[data-id]").show();
+            $("[data-id=" + index + "]").hide();
+
+            var checkBoxId = "Id_CheckBox_" + (index);
+            $(".checkBoxSites").attr("disabled", false);
+            $(".checkBoxSites").prop('checked', false);
+            $("#" + checkBoxId).prop('checked', true);
+            $("#" + checkBoxId).attr("disabled", true);
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function()
+        {
+        navigation();
+        })
+</script>
+
+
+
+
+
+

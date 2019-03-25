@@ -1,0 +1,64 @@
+﻿@model IEnumerable<RTLS.ReturnModel.MonitorDevice>
+
+<div class="">
+    <div class="col-md-12 col-sm-12 col-lg-12">
+        <div class="col-md-6 col-sm-6 col-lg-6 pull-left">
+            <h4>Montiors or Registered MacAddreses</h4>
+        </div>
+        <div class="col-md-6 col-sm-6 col-lg-6">
+            <a href="/Admin/Index" class="btn btn-info pull-right" name="btnBack" id="btnBack">Back</a>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 col-lg-12">
+        <div class="col-md-6 col-sm-6 col-lg-6 pull-left ">
+            <h6>Total Count</h6>
+            <div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="body-content">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.bn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.device_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.monitor_updated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.time_stamp)
+            </th>
+
+        </tr>
+        @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.bn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.device_id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.monitor_updated)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.time_stamp)
+                </td>
+
+            </tr>
+        }
+    </table>
+</div>

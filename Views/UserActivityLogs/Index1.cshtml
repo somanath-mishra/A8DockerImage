@@ -1,0 +1,309 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <link href="~/Vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <script src="~/Scripts/navigationJS.js"></script>
+    <style>
+        #ajaxSpinnerContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        #ajaxSpinnerImage {
+            display: none;
+        }
+    </style>
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row col-lg-12 col-md-12 col-sm-12">                    
+                    <label class="col-lg-2 col-md-2 col-sm-2"> From Date and To Date:</label>
+                    <input type="text" id="dtFromDate" name="datetimes" class="control-label col-lg-3 col-md-3 col-sm-3" />                    
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        @Html.DropDownList("NetWorkOfSiteId", ViewBag.Ssids as IEnumerable<SelectListItem>, new { @class = "form-control", @id = "SsidDdl", @name = "NetWorkOfSiteId", @required = "required" })
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <select id="idPageSize" class="form-control" name="PageSize">
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                        </select>
+                    </div>
+                    <input type="button" class="btn btn-success col-lg-1 col-md-1 col-sm-1" value="Find" id="btnFind"/>
+                    <input type="button" class="btn btn-success col-lg-1 col-md-1 col-sm-1" value="Export" id="btnExport" onclick="tableToExcel('idUserActivityLogs', 'UserActivityLogs')" />
+                    <input type="button" class="btn btn-success col-lg-1 col-md-1 col-sm-1" value="Refresh" id="btnGetCount" />
+                </div>
+                <div class="row col-lg-12 col-md-12 col-sm-12">
+                </div>
+                <br />
+                <font size='4'>
+                    <p></p>
+                </font>
+                <div id="ajaxSpinnerContainer">
+                    <img src="~/build/images/loading.gif" id="ajaxSpinnerImage" title="loading..." />
+                </div>
+                <div id="grid_paging" style="margin:5px auto;"></div>
+
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            @*<footer></footer>*@
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/tableToExcel.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+    <!--jQuery dependencies-->
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/base/jquery-ui.css" />    
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <!--PQ Grid files-->
+    <link href="~/Style/pqGrid.min.css" rel="stylesheet" />
+    <script src="~/Scripts/pqgrid.min.js"></script>    
+    
+    <!--PQ Grid Office theme-->
+    <link href="~/Style/pqgrid.css" rel="stylesheet" />
+    
+
+</body>
+</html>
+<script type="text/javascript">
+    var CpUrl = localStorage.getItem("CpUrl").toString().trim();
+    var lstSsids=@Html.Raw(Json.Encode(ViewBag.Ssids));
+    //var Ssids=[];
+
+    var Ssids = [];
+    for (var i = 0; i < lstSsids.length; i++) {
+        var column = lstSsids[i];
+        var obj = {};
+        obj[column.Value] = column.Text;
+        Ssids.push(obj);
+    }
+    
+    //var Ssids=null;
+    //for (var i = 0, len = lstSsids.length; i < len; i++) {
+    //    Ssids +="{"+lstSsids[i].Value+":"+lstSsids[i].Text+"},";
+    //}
+    //console.log(Ssids);
+    
+    function GetData(pageno) {
+        $("#ajaxSpinnerImage").show();
+        GetUserActivityData(pageno);
+    }
+
+        function filterhandler(evt, ui) {
+
+            var $toolbar = $grid.find('.pq-toolbar-search'),
+                $value = $toolbar.find(".filterValue"),
+                value = $value.val(),
+                condition = $toolbar.find(".filterCondition").val(),
+                dataIndx = $toolbar.find(".filterColumn").val(),
+                filterObject;
+
+            if (dataIndx == "") {//search through all fields when no field selected.
+                filterObject = [];
+                var CM = $grid.pqGrid("getColModel");
+                for (var i = 0, len = CM.length; i < len; i++) {
+                    var dataIndx = CM[i].dataIndx;
+                    filterObject.push({ dataIndx: dataIndx, condition: condition, value: value });
+                }
+            }
+            else {//search through selected field.
+                filterObject = [{ dataIndx: dataIndx, condition: condition, value: value}];
+            }
+            $grid.pqGrid("filter", {
+                oper: 'replace',
+                data: filterObject
+            });
+        }
+
+    function GetUserActivityData(pageNumberData) {
+        var range = $('#dtFromDate').val();
+        var dates = range.split(" - ");
+        var dtFromDate = dates[0];
+        var dtToDate = dates[1];
+        var pageSize = $("#idPageSize").val();
+        var SelectedSsidName = $("#SsidDdl option:selected").text();
+        var data = { pageNumber: pageNumberData, pageSize: pageSize, FromDate: dtFromDate, Todate: dtToDate, SsidName: SelectedSsidName };
+        $.ajax({
+            url: CpUrl + 'api/GetUserActivityLogs',
+            dataType: 'json',
+            contentType: 'application/json',
+            type: "POST",
+            async: true,
+            data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "BEARER " + localStorage.getItem('hdncptoken').toString());
+                $("#ajaxSpinnerImage").show();
+            },
+            success: function (response) {
+                var dataarr = [];
+                $.each(response.lstUserActivityLogs.lstUserActivityLogs, function (key, value) {
+                    dataarr.push(value);
+                });
+                //console.log(data1);
+                console.log(response.lstUserActivityLogs.lstUserActivityLogs);
+                console.log(dataarr);
+                console.log(JSON.stringify(response.lstUserActivityLogs.lstUserActivityLogs));
+                //array of columns.
+                var colModel = [
+                    {
+                        title: "Id", //title of column.
+                        width: 100, //initial width of column
+                        dataType: "integer", //data type of column
+                        dataIndx: "Id" //should match one of the keys in row data.
+                    },
+                    {
+                        title: "LogDateTime",
+                        width: 200,
+                        dataType: "string",
+                        dataIndx: "LogDateTime"
+                    },
+                    {
+                        title: "MacAddress",
+                        width: 150,
+                        dataType: "string",
+                        align: "right",
+                        dataIndx: "MacAddress"
+                    },
+                    {
+                        title: "SiteName",
+                        width: 150,
+                        dataType: "string",
+                        align: "right",
+                        dataIndx: "SiteName"
+                    },
+                    {
+                        title: "SsidName",
+                        width: 150,
+                        dataType: "string",
+                        align: "right",
+                        dataIndx: "SsidName"
+                    },
+                    {
+                        title: "UserAction",
+                        width: 150,
+                        dataType: "string",
+                        align: "right",
+                        dataIndx: "UserAction"
+                    }
+                ];
+                //main object to be passed to pqGrid constructor.
+                var obj = {
+                    width: 1000, //width of grid
+                    height: 400, //height of grid
+                    colModel: colModel,
+                    pageModel: { type: "local", rPP: 3, strRpp: "{0}" },
+                    dataModel: {
+                        data: response.lstUserActivityLogs.lstUserActivityLogs,
+                        getData: {
+                            totalRecords: response.lstUserActivityLogs.TotalCount,
+                            curPage: response.lstUserActivityLogs.currentPage
+                        }
+                    },
+                    toolbar: {
+                        cls: "pq-toolbar-search",
+                        items: [
+                            { type: "<span style='margin:5px;'>Filter</span>" },
+                            { type: 'textbox', attr: 'placeholder="Enter your keyword"', cls: "filterValue", listeners: [{ 'change': filterhandler }] },
+                            {
+                                type: 'select', cls: "filterColumn",
+                                listeners: [{ 'change': filterhandler }],
+                                options: function (ui) {
+                                    var CM = ui.colModel;
+                                    var opts = [{ '': '[ All Fields ]' }];
+                                    for (var i = 0; i < CM.length; i++) {
+                                        var column = CM[i];
+                                        var obj = {};
+                                        obj[column.dataIndx] = column.title;
+                                        opts.push(obj);
+                                    }
+                                    return opts;
+                                }
+                            },
+                            {
+                                type: 'select', style: "margin:0px 5px;", cls: "filterCondition",
+                                listeners: [{ 'change': filterhandler }],
+                                options:Ssids
+                            }
+                        ]
+                    }
+                };
+
+                $("#grid_paging").pqGrid(obj);
+                $("#ajaxSpinnerImage").hide();
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        $(function () {
+            $('#dtFromDate').daterangepicker({
+                timePicker: true,
+                timePicker24Hour: true,
+                timePickerIncrement: 1,
+                locale: {
+                    format: 'DD/MM/YYYY H:mm'
+                }
+            });
+        });
+        var pageNumber = 1;
+        var SsidDetails = '@ViewBag.Ssids';
+        //GetUserActivityData(pageNumber);
+
+        $("#btnFind").click(function () {
+            GetData(1);
+        });
+
+        $("#btnGetCount").click(function () {
+            $.ajax({
+                url: CpUrl + 'api/UnsuccessfullLogins',
+                dataType: 'json',
+                contentType: 'application/json',
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "BEARER " + localStorage.getItem('hdncptoken').toString());
+                },
+                success: function (response) {
+                    $("p").append("Total number of Users who did not Login is " + response);
+                    location.reload();
+                }
+            });
+        })
+        navigation();
+    });
+</script>
+
+
+
+

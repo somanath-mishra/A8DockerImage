@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/ConfigureSsidController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/ConfigureSsidService.js"></script>    
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+    <style>
+        .selected {
+            background-color: #f6bdbd;
+        }        
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div>
+        <div class="container body" ng-controller="ConfigureSsidController" ng-init="GetSSID()">
+            <div class="main_container">
+                @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+                <!-- page content -->
+                <div>
+                    <div>
+                        <div>
+                            <div class="right_col" role="main">  
+                                <div id="captivePortalSSID">
+                                    <table class="table table-responsive" id="CaptivePortalTable">
+                                        <thead>
+                                            <tr style="background-color: #ccc; color: black">
+                                                <th style="display: none;">
+                                                    SSId
+                                                </th>
+                                                <th>
+
+                                                </th>
+                                                <th>
+                                                    SSID Name
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Broadcast
+                                                </th>
+                                                <th>
+                                                    Control Type
+                                                </th>
+                                                <th>
+                                                    Created Date
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="SSid in lstNetWorkOfSites" ng-class="{selected : SSid.NetWorkOfSiteId === rowSelectedCpSsid}" style="cursor: pointer">
+                                            <tr ng-click="updateSelection($index, lstNetWorkOfSites);setSelected(SSid.NetWorkOfSiteId,SSid)" ng-if="SSid.ControlType.ControlTypeName=='MeetGreet' && SSid.SubControlType.SubControlTypeName=='Admin Configuration'">
+                                                <td style="display: none;">
+                                                    {{SSid.NetWorkOfSiteId}}
+                                                </td>
+                                                <td>
+                                                    <input ng-model="SSid.checked" type="checkbox" />
+                                                    @* <input type="checkbox" ng-model="Selected" value="{{SSid.NetWorkOfSiteId}}" ng-click="setSelected(SSid.NetWorkOfSiteId,SSid)">*@
+                                                </td>
+                                                <td>
+                                                    {{SSid.SsidName}}
+                                                </td>
+                                                <td>
+                                                    {{SSid.Status | capitalize}}
+                                                </td>
+                                                <td>
+                                                    {{SSid.BroadCast | capitalize}}
+                                                </td>
+                                                <td>
+                                                    {{SSid.ControlType.ControlTypeName}}
+                                                </td>
+                                                <td>
+                                                    {{SSid.CreatedDateTime | date }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr style="border-top: 1px solid #5021de;" />
+
+
+                                <div class="container" id="configurePartialViewSSID" ng-show="ssidConfigurationView">
+                                    <ul class="nav nav-tabs nav-justified">                                       
+                                        <li>
+                                            <a data-toggle="tab" href="#home">Login Configuration</a>
+                                        </li>
+                                        <li>
+                                            <a data-toggle="tab" href="#menu3">Success Page</a>
+                                        </li>                                        
+                                    </ul>
+                                    <div class="tab-content">
+                                      <div id="home" class="tab-pane fade in active">
+                                            <br />
+                                            <br />
+                                            <div class="form-horizontal">
+                                                <div class="form-group">
+                                                    <div id="subcontroltypeid">
+                                                        <label for="Display_Page_Using" style="align-content:flex-end" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Display Pages Using:</label>
+                                                        <div class="col-md-4 col-sm-4 col-xs-12">
+                                                            <select class="form-control" style="width: 60%" ng-model="networkConfObj.SubControlType.SubControlTypeId" required ng-options="SubControlType.SubControlTypeId as SubControlType.SubControlTypeName for SubControlType in ddlSubControlType"></select>
+
+                                                        </div>
+                                                    </div>
+                                                    <button class="btn btn-success" type="button" ng-if="networkConfObj.ControlType.ControlTypeName!='Usage'" ng-click="PreviewLoginPage()">View Login Page</button>
+                                                    <button class="btn btn-success" type="button" ng-if="networkConfObj.ControlType.ControlTypeName!='Usage'" ng-click="PreviewRegistrationPage()">View Registration Page</button>
+                                                    <button class="btn btn-success" type="button" ng-if="networkConfObj.ControlType.ControlTypeName=='Usage'" ng-click="PreviewLoginPage()">View Usage Page</button>
+                                                </div>
+                                                <div class="form-group" id="BeSpoke-PageName" style="visibility:hidden;">
+                                                    <label for="login-title" class="control-label col-md-3 col-sm-3 col-xs-12">BeSpoke Page Name:</label>
+                                                    <div class="col-md-2">
+                                                        <input id="BeSpoke_page" class="form-control" type="text" ng-model="networkConfObj.BeSpokePageName">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="middle-name">Login and Registration Page configuration:</label>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="background-colour" class="control-label col-md-3 col-sm-3 col-xs-12">Background Color:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="background-colour" class="form-control col-md-7 col-xs-12" type="color" ng-model="loginConfObj.BackGroundColor" style="width: 70px;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="loginwindow-colour" class="control-label col-md-3 col-sm-3 col-xs-12">Login Window Color:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="loginwindow-colour" class="form-control col-md-7 col-xs-12" type="color" ng-model="loginConfObj.LoginWindowColor" style="width: 70px;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="connectNowButton-colour" class="control-label col-md-3 col-sm-3 col-xs-12">Connect Now Button Color:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="connectNowButton-colour" class="form-control col-md-7 col-xs-12" type="color" ng-model="loginConfObj.ButtonColor" style="width: 70px;">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="Require-Password">
+                                                    <label for="require-password" class="control-label col-md-3 col-sm-3 col-xs-12">Require Password:</label>
+                                                    <div class="col-md-1 col-sm-1 col-xs-3">
+                                                        <input class="form-control col-md-7 col-xs-12" type="checkbox" id="IsPasswordRequire" ng-change="PasswordChlick()" ng-model="loginConfObj.IsPasswordRequire" style="width: 30px;">
+                                                    </div>
+                                                    <div id="Require-SecurityKey">
+                                                        <label for="require-securitykey" class="control-label col-md-2 col-sm-1 col-xs-3">Require Security Key:</label>
+                                                        <div class="col-md-1">
+                                                            <input class="form-control col-md-3" type="checkbox" id="IsSecurityKeyRequire" ng-model="loginConfObj.IsSecurityKeyRequire" style="width: 30px;" ng-click="ShowSecureKeyField()">
+                                                        </div>
+                                                        <div class="col-md-2" id="securekey-input" style="display:none">
+                                                            <input id="securitykey" class="form-control col-md-2 " type="text" ng-model="networkConfObj.SecurityKey">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="login-title" class="control-label col-md-3 col-sm-3 col-xs-12">Login Page Title:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="login-title" class="form-control col-md-7 col-xs-12" type="text" ng-model="loginConfObj.LoginPageTitle">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="registration-title" class="control-label col-md-3 col-sm-3 col-xs-12">Registration Page Title:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="registration-title" class="form-control col-md-7 col-xs-12" type="text" ng-model="loginConfObj.RegistrationPageTitle">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" ng-repeat="formFiled in formFieldList ">
+                                                    <label for="registration-title" class="control-label col-md-3 col-sm-3 col-xs-12">FieldLabel/Type:</label>
+                                                    <div class="col-md-3">
+                                                        <input type="hidden" ng-model="formFiled.FormControlId" />
+                                                        <input type="text" class="form-control" ng-model="formFiled.LabelName" />
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" ng-model="formFiled.LabelNameToDisplay" />
+                                                    </div>
+                                                    <div class="col-md-2" ng-if="formFiled.LabelName!='Username'">
+                                                        <input type="checkbox" class="form-control" id="configcheckboxId" ng-model="formFiled.IsMandetory" />
+                                                    </div>
+                                                    <button class="btn btn-danger" ng-if="formFiled.LabelName!='Username'" type="button" ng-click="DeleteFormControlLoginConf(formFiled)">Delete Field</button>
+                                                </div>
+                                                <br />
+                                                <br />
+                                                <div class="form-group pull-right">
+                                                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal">Add Field</button>
+                                                </div>
+                                                <div class="modal fade" id="myModal" role="dialog">
+                                                    <div class="modal-dialog" style="width: 60%">
+                                                        <!-- Modal content-->
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="control-group" id="fields">
+                                                                    <label for="field-label" class="control-label col-md-3 col-sm-3 col-xs-12">Field Name/Type</label>
+                                                                    <div class="controls">
+                                                                        <div role="form" autocomplete="off">
+                                                                            <form name="SaveFormControl" ng-submit="SaveFormControlLoginConf()">
+                                                                                <div class="row">
+                                                                                    <div class="voca">
+                                                                                        <div class="col-md-3">
+                                                                                            <div class="col-md-3">
+                                                                                                <select class="form-control" id="Fieldlabel" name="Fieldlabel" style="width: 180px" ng-model="FormControls.LabelName" required>
+                                                                                                    <option value="">Select Control Type</option>
+                                                                                                    <option value="Username ">Username </option>
+                                                                                                    <option value="FirstName">FirstName</option>
+                                                                                                    <option value="LastName">LastName</option>
+                                                                                                    <option value="Age">Age</option>
+                                                                                                    <option value="Gender">Gender</option>
+                                                                                                    <option value="Mobilenumber">Mobilenumber</option>
+                                                                                                    <option value="Email">Email</option>
+                                                                                                    <option value="UserOfDataOptIn">UserOfDataOptIn</option>
+                                                                                                    <option value="promotional_email">promotional_email</option>
+                                                                                                    <option value="ThirdPartyOptIn ">ThirdPartyOptIn </option>
+                                                                                                    <option value="Address1">Address1</option>
+                                                                                                    <option value="Address2">Address2</option>
+                                                                                                    <option value="PostTown">PostTown</option>
+                                                                                                    <option value="Postcode">Postcode</option>
+                                                                                                    <option value="AccountNumber">Account Number</option>
+                                                                                                    <option value="CabinNumber">Cabin Number</option>
+                                                                                                    <option value="County">County</option>
+                                                                                                    <option value="Country">Country</option>
+                                                                                                    <option value="Birthdate">Birthdate</option>
+                                                                                                    <option value="Custom1 ">Custom1 </option>
+                                                                                                    <option value="Custom2">Custom2</option>
+                                                                                                    <option value="Custom3">Custom3</option>
+                                                                                                    <option value="Custom4">Custom4</option>
+                                                                                                    <option value="Custom5">Custom5</option>
+                                                                                                    <option value="Custom6">Custom6</option>
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="col-md-2">
+                                                                                            <input id="txtLabelNameDisplay" class="form-control col-md-7 col-xs-12" type="text" name="LabelNameToDisplay" ng-model="FormControls.LabelNameToDisplay">
+                                                                                        </div>
+                                                                                        <div class="col-md-1">
+                                                                                            <input class="form-control col-md-7 col-xs-12" type="checkbox" id="chkOptOrMand" name="IsMandetory" value="required" ng-model="FormControls.IsMandetory" style="width: 30px;">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-md-2">
+                                                                                        <button type="submit" class="btn btn-success btn-add" id="btnSave">
+                                                                                            <span aria-hidden="true"></span> Save
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <br>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group" id="optionBlock" style="display: none">
+                                                                    <label for="login-title" class="control-label col-md-3 col-sm-3 col-xs-12">Add Option Value</label>
+                                                                    <div class="col-md-9 col-sm-9 col-xs-9" id="txtDiv">
+                                                                        <div class="col-md-2 col-sm-2 col-lg-2">
+                                                                            <input type="text" name="optionval" id="optionval" class="form-control col-md-2" />
+                                                                        </div>
+                                                                        <div class="col-md-2 col-lg-2 col-xs-2 pull-right">
+                                                                            <input type="button" class="btn btn-success" name="plus" id="plus" value="+"> <input type="button" class="btn btn-danger" name="minus" id="minus" value="-">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="ln_solid"></div>
+                                                <div class="form-group">
+                                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                        <input type="button" id="createSiteOrLoginRegisterConf" class="btn btn-success" value="Save" ng-click="CreateAndUpdateLoginConfiguration(formFieldList)" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="menu3" class="tab-pane fade">
+                                            <br />
+                                            <br />
+                                            <div class="form-horizontal">
+                                                <div class="form-group">
+                                                    <label for="Success_Page_Option" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Success Page Option:</label>
+                                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                                        <select class="form-control" name="SuccessPageOption" id="SuccessPageOption" required ng-model="networkConfObj.Forms.ManagePromotion.SuccessPageOption">
+                                                            <option value="Display">Display</option>
+                                                            <option value="Route to URL">Route to URL</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button class="btn btn-success" type="button" ng-if="networkConfObj.ControlType.ControlTypeName!='Usage'" ng-click="PreviewSuccessPage()">View Success Page</button>
+                                                        <button class="btn btn-success" type="button" ng-if="networkConfObj.ControlType.ControlTypeName=='Usage'" ng-click="PreviewStatusPage()">View Status Page</button>
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group" style="display: none">
+                                                    <label for="FormId" class="control-label col-md-3 col-sm-3 col-xs-12">Form Id:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="FormId" class="form-control col-md-7 col-xs-12" type="text" ng-model="networkConfObj.Forms.ManagePromotion.FormId" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style="display: none">
+                                                    <label for="SsId" class="control-label col-md-3 col-sm-3 col-xs-12">SsId:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="SsId" class="form-control col-md-7 col-xs-12" type="text" ng-model="networkConfObj.Forms.ManagePromotion.SSId" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="Web_Page_URL" class="control-label col-md-3 col-sm-3 col-xs-12">Web Page URL:</label>
+                                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                                        <input id="Web_Page_URL" class="form-control col-md-7 col-xs-12" type="text" ng-model="networkConfObj.Forms.ManagePromotion.WebPageURL">
+                                                    </div>
+                                                    <div class="col-md-6"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="OptionalPicture" class="control-label col-md-3 col-sm-3 col-xs-12">Optional Picture:</label>
+                                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                                        <div class="input-group">
+                                                            <label class="input-group-btn">
+                                                                <span class="btn btn-success">
+                                                                    Browse&hellip;<input type="file" file-model="myPromotionPic" style="display: none;" accept="image/*">
+                                                                </span>
+                                                            </label>
+                                                            <input type="text" class="form-control" ng-model="networkConfObj.Forms.ManagePromotion.OptionalPictureForSuccessPage" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <button ng-click="UploadPromotionPic()" class="btn btn-success">upload</button>
+                                                        <img ng-src="{{networkConfObj.Forms.ManagePromotion.OptionalPictureForSuccessPage}}" style="width: 20%;" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="SuccessPageTitle" class="control-label col-md-3 col-sm-3 col-xs-12">Success Page Title:</label>
+                                                    <div class="col-md-3">
+                                                        <textarea ng-model="networkConfObj.Forms.ManagePromotion.SuccessPageTitle" style="width:100%"></textarea>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="form-group">
+                                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                        <input type="button" id="Save" class="btn btn-success" value="Save" ng-click="SaveManagePromotion()" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                        <br />
+                                        <br />
+                                        <br />
+                                        <input name="MacAddress" type="hidden" id="Device" value='@System.Web.Configuration.WebConfigurationManager.AppSettings["Station_mac"]' />
+                                        <!-- /page content -->
+                                        <!-- /footer content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    @*<link href="~/Scripts/Angular_Notification/popup.css" rel="stylesheet" />*@
+
+    <!--Modal Contaner-->
+
+    <div class="modal fade " id="ModalWindow" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <h3 class="modal-title" id="ModalWindowLabel">TERMS AND CONDITIONS</h3>
+                </div>
+                <div id="TermModal" class="modal-body">
+                    <div class="form-group">
+                        <div id="TermContent">
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="bootstrap-dialog-footer">
+                            <div class="bootstrap-dialog-footer-buttons">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" ID="btnClose" aria-label="Close">Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        navigation();
+    });
+
+    function showTerms(val) {
+
+        $('#TermContent').html($('#message-text').text().replace(/(\n|\r|\r\n)/g, '<br>'));
+        $('#ModalWindow').modal('show');
+    }
+</script>
+

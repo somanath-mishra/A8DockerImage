@@ -1,0 +1,525 @@
+﻿@using A8PlatForm.Domains.A8AdminModel
+@model Site
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+        
+</head>
+<body class="nav-md" onload="onload()">
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+        <div class="modal-dialog modal-sm" style="width:400px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Are you sure you want to delete</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="modal-btn-si">Yes</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="modal-btn-no">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                        </div>
+                    </div>                               
+
+
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-6 col-xs-6">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <br />
+                                    <div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                        @using (Html.BeginForm("UpdateSiteAndLoginRegisterConf", "Admin", FormMethod.Post, new { id = "myForm", enctype = "multipart/form-data",autocomplete="off"}))
+                                        {
+                                            @Html.AntiForgeryToken();
+                                            <div class="form-group" style="display:none;">
+                                                <label for="ClearErrorLogDays" class="control-label col-md-3 col-sm-3 col-xs-3">ClearErrorLogDays:</label>
+                                                <div class="col-md-6 col-sm-3 col-xs-3">
+                                                    @Html.EditorFor(model => model.ClearErrorLogDays, new { htmlAttributes = new { @class = "form-control", @name = "ClearErrorLogDays", @style = "display:none" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group" style="display:none;">
+                                                <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-3">Site Id:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-3">
+                                                    @Html.EditorFor(model => model.SiteId, new { htmlAttributes = new { @class = "form-control", @name = "SiteId", @style = "display:none" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="middle-name" class="control-label col-md-2 col-sm-2 col-xs-3 required-field">Site Name:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.SiteName, new { htmlAttributes = new { @class = "form-control", @name = "sitename", @required = "required", @id = "site-name" } })<label class="message" id="message" style="color:red" />
+                                                    @Html.ValidationMessageFor(m => m.SiteName)
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="company-name" class="control-label col-md-2 col-sm-2 col-xs-3 required-field">Company Name:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    <input type="text" name="CompanyName" id="company-name" class="form-control" style="display:none" required/>
+                                                    @Html.DropDownList("CompanyId", ViewBag.companies as IEnumerable<SelectListItem>, "--Select the Company--", new { @class = "form-control", @id = "CompanyDdl", @name = "CompanyId", @required = "required" })
+                                                </div>
+                                                <div style="margin-top:-15px;">
+                                                    Create New Company
+                                                </div>
+                                                <input class="form-control col-md-7 col-xs-3" type="checkbox" id="checkboxCompany" onclick="showCompanyTextBox()" name="CreateNewCompany" style="width:30px;float: left;margin-right: 8%;">
+                                                <input type="button" class="btn btn-success col-md-2 col-sm-2 col-xs-3" value="Edit Company" id="btnEditCompany" name="btnEditCompany" style="float:left;margin-left: 9%;" />
+
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="company-icon" class="control-label col-md-2 col-sm-2 col-xs-3">Company Logo:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.Company.CompanyIcon, new { htmlAttributes = new { @class = "form-control", @name = "CompanyIcon", @id = "companyIconPath" } })
+                                                </div>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    <img src="@Model.Company.CompanyIcon" style="height:50px;width:50px;" onerror="this.style.display='none';this.style.height='0px';this.style.width='0px'" ;id="compLogo" />
+                                                </div>
+                                                @*<div class="col-md-2 col-sm-2 col-xs-3">*@
+                                                <input id="CompanyIcon" type="file" name="CompanyIcon" style="display:none" onChange="HandlePicchange();">
+                                                <input type="button" class="btn btn-success col-md-1 col-sm-1 col-xs-3" style="position:center;margin-left: 3%;" value="Browse" id="btnCompanyIcon" name="CompanyIcon" onclick="HandlePicBrowseClick();" />
+                                                @*div>*@
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="organisation-name" class="control-label col-md-2 col-sm-2 col-xs-3">Organisation Name:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @*@Html.EditorFor(model => model.Company.Organisation.OrganisationName, new { htmlAttributes = new { @class = "form-control", @name = "organisationname", @required = "required", @id = "organisation-name", @style = "display:none" } })
+                                                        @Html.ValidationMessageFor(m => m.Company.Organisation.OrganisationName)*@
+                                                    <input id="organisation-name" class="form-control col-md-7 col-xs-3" type="text" name="OrganisationName" style="display:none">
+                                                    @Html.DropDownList("OrganisationId", ViewBag.Organisation as IEnumerable<SelectListItem>, "--Select the Organisation--", new { @class = "form-control", @id = "organisationDdl", @name = "OrganisationId" })
+                                                </div>
+                                                <div style="margin-top:-15px;">
+                                                    Create New Organisation
+                                                </div>
+                                                <input class="form-control col-md-2 col-sm-2 col-xs-3" type="checkbox" id="checkboxOrganisation" onclick="showOrganistationTextBox()" name="CreateNewOrganisation" style="width:20px;float: left;margin-right: 8%;">
+                                                <input type="button" class="btn btn-success col-md-2 col-sm-2 col-xs-3" value="Edit Organisation" id="btnEditOrg" name="btnEditOrg" style="float: left;margin-left: 10%;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="controller-IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">BackGroundColor</label>
+                                                <div class="col-md-2 col-sm-1 col-xs-1">
+                                                    @*@Html.EditorFor(model => model.Company.BackGroudColor, new { htmlAttributes = new { @class = "form-control", @name = "BackGroudColor", @type = "color" } })*@
+                                                    <input type="color" value="@Model.Company.BackGroudColor" class="form-control" name="BackGroundColor" id="BackGroundColor"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="controller-IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">Controller IP address:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    @Html.EditorFor(model => model.ControllerIpAddress, new { htmlAttributes = new { @class = "form-control", @name = "ControllerIpAddress" } })
+                                                </div>
+                                                <label for="controller-Port" class="control-label col-md-1 col-sm-1 col-xs-2">Port:</label>
+                                                <div class="col-md-1 col-sm-1 col-xs-1">
+                                                    @Html.EditorFor(model => model.CaptivePortalConfigurations.Port,new { htmlAttributes = new { @class = "form-control", @name = "Controller_Port"}})
+                                                </div>
+                                                <label for="controller-Username" class="control-label col-md-1 col-sm-1 col-xs-2">UserName:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-1">
+                                                    @Html.EditorFor(model => model.CaptivePortalConfigurations.UserName, new { htmlAttributes = new { @class = "form-control", @name = "Controller_UserName" } })
+                                                </div>
+
+                                                <label for="controller-Password" class="control-label col-md-1 col-sm-1 col-xs-2">Password:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-1">
+                                                    @Html.EditorFor(model => model.CaptivePortalConfigurations.Password, new { htmlAttributes = new { @class = "form-control", @name = "Controller_Password" } })
+                                                </div>
+                                            </div>
+                                            //SitecontollerName
+                                            <div class="form-group">
+                                                <label for="controller_name" class="control-label col-md-2 col-sm-2 col-xs-3">Controller Type:</label>
+                                                <div class="col-md-6 col-sm-3 col-xs-3">
+                                                    <select id="ControllerTypeNameId" name="ControllerTypeNameId" class="form-control">
+                                                        <option>--Select--</option>
+                                                        <option value="0">None</option>
+                                                        <option value="10">Fortinet</option>
+                                                        <option value="20">Ruckus</option>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="radius-IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">Radius IP address:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    @Html.EditorFor(model => model.MySqlIpAddress, new { htmlAttributes = new { @class = "form-control", @name = "MySqlIpAddress" } })
+                                                </div>
+                                                <label for="radius-IpAddress" class="control-label col-md-1 col-sm-1 col-xs-2">SecretKey:</label>
+                                                <div class="col-md-1 col-sm-1 col-xs-1">
+                                                    @Html.EditorFor(model => model.RadiusConfiguration.SecretKey, new { htmlAttributes = new { @class = "form-control", name = "MySql_SecretKey" } })
+                                                </div>
+                                                <label for="radius-IpAddress" class="control-label col-md-1 col-sm-1 col-xs-2">UserName:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-1">
+                                                    @Html.EditorFor(model => model.RadiusConfiguration.UserName, new { htmlAttributes = new { @class = "form-control", name = "MySql_UserName" } })
+                                                </div>
+                                                <label for="radius-IpAddress" class="control-label col-md-1 col-sm-1 col-xs-2">Password:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-1">
+                                                    @Html.EditorFor(model => model.RadiusConfiguration.Password, new { htmlAttributes = new { @class = "form-control", name = "MySql_Password" } })
+                                                </div>
+                                            </div>
+                                           
+                                            
+
+                                            <div class="form-group">
+                                                <label for="RtlsWebSocketUrl" class="control-label col-md-2 col-sm-2 col-xs-3">NasIpAddress:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    @Html.EditorFor(model => model.NasIpAddress, new { htmlAttributes = new { @class = "form-control", @name = "NasIpAddress" } })
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="DashboardUrl" class="control-label col-md-2 col-sm-2 col-xs-3">Dashboard URL:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.DashboardUrl, new { htmlAttributes = new { @class = "form-control", @name = "DashboardUrl" } })
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="RtlsUrl" class="control-label col-md-2 col-sm-2 col-xs-3">RTLS URL:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.RtlsUrl, new { htmlAttributes = new { @class = "form-control", @name = "RtlsUrl" } })
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="CpUrl" class="control-label col-md-2 col-sm-2 col-xs-3">CaptivePortal URL:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.CpUrl, new { htmlAttributes = new { @class = "form-control", @name = "RtlsUrl" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="CpUrl" class="control-label col-md-2 col-sm-2 col-xs-3">WifiUserPage URL:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.WifiUserPageUrl, new { htmlAttributes = new { @class = "form-control", @name = "WifiUserPageUrl" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="RtlsPublisherUrl" class="control-label col-md-2 col-sm-2 col-xs-3">RTLS Pulisher Url:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.RtlsPublisherUrl, new { htmlAttributes = new { @class = "form-control", @name = "RtlsPublisherUrl" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="RtlsWebSocketUrl" class="control-label col-md-2 col-sm-2 col-xs-3">RTLS WebSocketUrl Url:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-3">
+                                                    @Html.EditorFor(model => model.RtlsWebSocketUrl, new { htmlAttributes = new { @class = "form-control", @name = "RtlsWebSocketUrl" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xs-6">
+                                                    <label for="Resco_IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">Resco ApiUrl:</label>
+                                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                                        @Html.EditorFor(model => model.RescoConfiguration.RescoApiUrl, new { htmlAttributes = new { @class = "form-control", @name = "Resco_IpAddress" } })
+                                                    </div>
+                                                    <label for="Resco_UserName" class="control-label col-md-2 col-sm-2 col-xs-3">UserName:</label>
+                                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                                        @Html.EditorFor(model => model.RescoConfiguration.UserName, new { htmlAttributes = new { @class = "form-control", name = "Resco_UserName" } })
+                                                    </div>
+                                                    <label for="Resco_Password" class="control-label col-md-2 col-sm-2 col-xs-3">Password:</label>
+                                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                                        @Html.EditorFor(model => model.RescoConfiguration.Password, new { htmlAttributes = new { @class = "form-control", name = "Resco_Password" } })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xs-6">
+                                                    <label for="Resco_DepartmentCode" class="control-label col-md-2 col-sm-2 col-xs-3">Department:</label>
+                                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                                        @Html.EditorFor(model => model.RescoConfiguration.DepartmentCode, new { htmlAttributes = new { @class = "form-control", name = "Resco_DepartmentCode" } })
+                                                    </div>
+                                                    <label for="Resco_TerminalCode" class="control-label col-md-2 col-sm-2 col-xs-3">Terminal:</label>
+                                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                                        @Html.EditorFor(model => model.RescoConfiguration.TerminalCode, new { htmlAttributes = new { @class = "form-control", name = "Resco_TerminalCode" } })
+                                                    </div>
+                                                    <label for="Resco_RequestId" class="control-label col-md-2 col-sm-2 col-xs-3">RequestId:</label>
+                                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                                        @Html.EditorFor(model => model.RescoConfiguration.RequestId, new { htmlAttributes = new { @class = "form-control", name = "Resco_RequestId" } })
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fireWall_IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">FireWall IP:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    @Html.EditorFor(model => model.FirewallConfiguration.IP, new { htmlAttributes = new { @class = "form-control", @name = "fireWall_IpAddress" } })
+                                                </div>
+                                                <label for="fireWall-UserName" class="control-label col-md-1 col-sm-1 col-xs-2">UserName:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    @Html.EditorFor(model => model.FirewallConfiguration.UserName, new { htmlAttributes = new { @class = "form-control", name = "fireWall-UserName" } })
+                                                </div>
+                                                <label for="fireWall-Password" class="control-label col-md-1 col-sm-1 col-xs-2">Password:</label>
+                                                <div class="col-md-2 col-sm-2 col-xs-3">
+                                                    @Html.EditorFor(model => model.FirewallConfiguration.Password, new { htmlAttributes = new { @class = "form-control", name = "fireWall-Password" } })
+                                                </div>
+                                                <label for="fireWall-Port" class="control-label col-md-1 col-sm-1 col-xs-2">Port:</label>
+                                                <div class="col-md-1 col-sm-1 col-xs-2">
+                                                    @Html.EditorFor(model => model.FirewallConfiguration.Port, new { htmlAttributes = new { @class = "form-control", name = "fireWall-Port" } })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                    <input type="submit" id="Update" class="btn btn-success" name="Command" value="Update" />
+                                                    @*<button type="submit" class="btn btn-success">Update</button>*@
+                                                    <input type="button" id="Delete" class="btn btn-danger" name="Command" value="Delete" />
+                                                    @*<button id="Delete11" class="btn btn-danger" name="Command">Delete</button>*@
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>                                 
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer>
+
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+
+    <!--Modal Contaner-->
+    <div class="row">
+        <div class="modal fade " id="ModalWindow" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header ">
+                        <center><h5 class="modal-title" id="ModalWindowLabel">Edit Company Name</h5></center>                        
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="CompanyModal" class="modal-body">
+                        <div class="form-group">
+                            <input id="ipCompanyId" name="ipCompanyId" hidden />
+                            <input id="_OrgId" name="_OrgId" hidden />
+                            <label id="lbCompanyName" class="control-label col-md-4 col-sm-4 col-xs-6 required-field">Company Name:</label>
+                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                <input id="ipCompanyName" name="ipCompanyName" class="form-control" />
+                                <label id="_Status" name="_Status" class="control-label "></label>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-3">
+
+                            </div>
+                        </div><br />
+                        <div class="form-group">
+                        </div><br />
+                        <div class="form-group">
+
+                        </div><br />
+
+                        <div class="modal-footer">
+                            <div class="bootstrap-dialog-footer">
+                                <div class="bootstrap-dialog-footer-buttons">
+                                    <button type="button" class="btn btn-success" ID="btnUpdateCompany">Save changes</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" ID="btnClose" aria-label="Close">Close</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+       
+       
+        var modalConfirm = function(callback){
+            //e.preventdefault();
+            $("#Delete").on("click", function(){
+                $("#mi-modal").modal('show');
+                return false;
+            });
+
+            $("#modal-btn-si").on("click", function(){
+                callback(true);
+                $("#mi-modal").modal('hide');
+            });
+  
+            $("#modal-btn-no").on("click", function(){
+                callback(false);
+                $("#mi-modal").modal('hide');
+            });
+        };
+
+        modalConfirm(function(confirm){
+            if(confirm){                
+                $("#myForm").trigger('submit');
+            }                
+            else{
+                //Acciones si el usuario no confirma
+               // alert("No");
+            }
+        });
+        
+
+    $("#CompanyDdl").val(@Model.CompanyId);
+    $("#ControllerTypeNameId").val(@Model.ControllerNameId);
+    $("#organisationDdl").val(@Model.Company.OrganisationId);
+    
+    function HandlePicBrowseClick() {
+        var fileinput = document.getElementById("CompanyIcon");
+        fileinput.click();
+    }
+
+    function HandlePicchange() {
+        var fileinput = document.getElementById("CompanyIcon");
+        var textinput = document.getElementById("companyIconPath");
+        textinput.value = fileinput.value;
+    }
+
+    $('#checkbox-value').text($('#cbPwd').val());
+    $("#cbPwd").on('change', function () {
+        if ($(this).is(':checked')) {
+            $(this).attr('value', 'true');
+        } else {
+            $(this).attr('value', 'false');
+        }
+
+    });
+
+    $('#checkbox-value').text($('#al').val());
+    $("#al").on('change', function () {
+        if ($(this).is(':checked')) {
+            $(this).attr('value', 'true');
+        } else {
+            $(this).attr('value', 'false');
+        }
+
+    });
+
+    function showCompanyTextBox() {
+        if ($('#checkboxCompany').is(':checked')) {
+            $('#CompanyDdl').hide();
+            $('#company-name').show();
+            $('#company-name').prop('required', true);
+        } else {
+            $('#CompanyDdl').show();
+            $('#company-name').hide();
+            $('#company-name').prop('required', false);
+        }
+    }
+
+    function onload() {
+        if ($('#checkboxCompany').is(':checked')) {
+            $('#CompanyDdl').hide();
+            $('#company-name').show();
+        } else {
+            $('#CompanyDdl').show();
+            $('#company-name').hide();
+            $('#CompanyDdl').prop('required', true);
+        }
+    }
+
+    function showOrganistationTextBox() {
+        if ($('#checkboxOrganisation').is(':checked')) {
+            $('#organisationDdl').hide();
+            $('#organisation-name').show();
+        } else {
+            $('#organisationDdl').show();
+            $('#organisation-name').hide();
+        }
+    }
+
+    $("#CompanyDdl").change(function () {
+        if ($(this).val() != "") {
+            $('#organisationddl').val('');
+            var id = $(this).val();
+            $.getJSON("/Admin/GetOrganisations?companyId=" + id, function (data) {
+                $("#organisationDdl").val(data.SelectedOrganisation);
+                $("#BackGroundColor").val(data.BackGroundColor);
+                $("#compLogo").show();
+                $("#CompanyIconPath").val(data.cmpImage);
+                $("#compLogo").attr('src', data.cmpImage);
+            });
+        }
+    });
+
+    $("#btnEditCompany").on("click", function () {
+        //$("#ModalWindowLabel").empty();
+        $('#ModalWindowLabel').html("Edit Company Name");
+        $('#lbCompanyName').html("Company Name:");
+
+        $("#_Status").empty();
+        $("#ipCompanyId").val($("#CompanyDdl").val());
+        $("#ipCompanyName").val($("#CompanyDdl option:selected").text());
+
+        $("#_OrgId").val( $("#organisationDdl").val());
+        $('#ModalWindow').modal('show');
+    });
+
+    $("#btnEditOrg").on("click", function () {
+        $('#ModalWindowLabel').html("Edit Organisation Name");
+        $('#lbCompanyName').html("Organisation Name:");
+        $("#_Status").empty();
+        $("#ipCompanyId").val($("#organisationDdl").val());
+        $("#ipCompanyName").val($("#organisationDdl option:selected").text());
+        $("#_OrgId").val( '');
+
+        $('#ModalWindow').modal('show');
+    });
+
+    $("#btnUpdateCompany").on("click", function () {
+        if ($('#ModalWindowLabel').text() == 'Edit Company Name') {
+            var data = { CompanyId: $("#ipCompanyId").val(), CompanyName: $("#ipCompanyName").val(), siteId: @ViewBag.SIteId }
+            var url = "@Url.Action("EditCompany", "Admin")";
+            $.post(url,
+                data,
+                function(response) {
+                    if (response.success) {
+                        $("#_Status").html(response.responseText);
+                        $('#ModalWindow').modal('hide');
+                        location.reload();
+                    } else {
+                        $("#_Status").html(response.responseText);
+                    }
+                });
+
+        } else if ($('#ModalWindowLabel').text() == 'Edit Organisation Name'){
+            var data = { OrganisationId:  $("#ipCompanyId").val(), OrganisationName: $("#ipCompanyName").val(), siteId: @ViewBag.SIteId }
+            var url = "@Url.Action("EditOrganisation", "Admin")";
+            $.post(url,
+                data,
+                function(response) {
+                    if (response.success) {
+                        $("#_Status").html(response.responseText);
+                        $('#ModalWindow').modal('hide');
+                        location.reload();
+                    } else {
+                        $("#_Status").html(response.responseText);
+                    }
+                });
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        navigation();
+    })     
+
+</script>

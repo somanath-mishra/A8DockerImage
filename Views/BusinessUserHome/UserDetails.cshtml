@@ -1,0 +1,136 @@
+﻿@model A8PlatForm.Domains.CustomIdentity.ApplicationUser
+@{
+    ViewBag.Title = "EditUser";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/CheckBox.css" rel="stylesheet" />
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" style="min-height: 751px;">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                        </div>
+                    </div>
+                    @*<div class="clearfix"></div>*@
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div>
+                                <div class="x_content">
+                                    <br />
+                                    <div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                        @if (TempData["Success"] != null)
+                                        {
+                                            <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+                                        }
+                                        @using (Html.BeginForm("EditUserDetails", "BusinessUserHome", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            <div class="form-group">
+                                                <label for="Email" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Email:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @required = "required", title = "Email is required" } })
+                                                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Forename" class="control-label col-md-3 col-sm-3 col-xs-12">Forename:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.EditorFor(model => model.ForeName, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.ForeName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Surname" class="control-label col-md-3 col-sm-3 col-xs-12">Surname:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                    <input type="button" id="UpdatePwd" class="btn btn-success" value="Update Password" />
+                                                    <input type="submit" id="Save" class="btn btn-success" value="Save Updates" />
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div id="UpdatePasswordDetails" style="display:none; border-radius:20px;background-color:#fff;" class="table-bordered">
+                                            <br /><br />
+                                            @using (Html.BeginForm("UpdatePassword", "BusinessUserHome", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                            {
+                                                <div class="form-group">
+                                                    <label for="NewPassword" class="control-label col-md-3 col-sm-3 col-xs-12">NewPassword:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="NewPassword" class="form-control col-md-7 col-xs-12" type="password" minlength="6" name="NewPassword">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="ConfirmPassword" class="control-label col-md-3 col-sm-3 col-xs-12">ConfirmPassword:</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <input id="ConfirmPassword" class="form-control col-md-7 col-xs-12" type="password" minlength="6" name="ConfirmPassword">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                        <input type="submit" id="UpdatePassword" class="btn btn-success" value="Update Password" />
+                                                    </div>
+                                                </div>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <!-- <script src="../vendors/DateJS/build/date.js"></script>-->
+    <script src="~/build/js/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $("#UpdatePwd").click(function () {
+        $("#UpdatePasswordDetails").show();
+        $("#UpdatePwd").hide();
+        $("#Save").hide();
+    });
+
+    var NewPassword = document.getElementById("NewPassword")
+  , ConfirmPassword = document.getElementById("ConfirmPassword");
+
+    function validatePassword() {
+        if (NewPassword.value != ConfirmPassword.value) {
+            ConfirmPassword.setCustomValidity("Passwords Don't Match");
+        } else {
+            ConfirmPassword.setCustomValidity('');
+        }
+    }
+
+    NewPassword.onchange = validatePassword;
+    ConfirmPassword.onkeyup = validatePassword;
+
+    navigation();
+</script>

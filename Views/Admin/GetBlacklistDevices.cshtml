@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <div class="right_col" role="main">
+                <div id="lstBlacklistedDevices">
+                    <table id="idBlacklistDevices" class="table table-responsive table-bordered table-striped" style="width:auto">
+                        <thead>
+                            <tr>
+                                <th>Mac Address(Blacklisted)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            @*<footer></footer>*@
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var BaseUrl = localStorage.getItem('rtlsUrl');
+            var GetBlacklistDevices = BaseUrl + "/RealTimeLocation/GetOnlyBlackListDevices/";
+            $.ajax({
+                url: GetBlacklistDevices,
+                type: "GET",
+                dataType: "json",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "BEARER " + localStorage.getItem('hdnrtlstoken').toString());
+                },
+                success: function (data) {
+                    $.each(data, function (index, itemData) {
+                        var row = '<tr><td> ' + itemData + ' </td></tr>'
+                        $("#idBlacklistDevices tbody").append(row);
+                    });
+                }
+            });
+            navigation();
+    })
+    </script>
+</body>
+</html>
+
+
+

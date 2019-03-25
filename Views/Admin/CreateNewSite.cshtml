@@ -1,0 +1,334 @@
+﻿@model A8PlatForm.Domains.ViewModels.CPAdmin.SiteViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/RequiredField.css" rel="stylesheet"/>
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+</head>
+<body class="nav-md">
+<div class="container body">
+<div class="main_container">
+@Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 col-sm-6 col-xs-6">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <br/>
+                        <div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                            @using (Html.BeginForm("CreateNewSite", "Admin", FormMethod.Post, new {enctype = "multipart/form-data", autocomplete = "off"}))
+                            {
+                                @Html.AntiForgeryToken()
+                                ;
+                                <div class="form-group">
+                                    <label for="middle-name" class="control-label col-md-2 col-sm-2 col-xs-3 required-field">Site Name:</label>
+
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.SiteName, new {htmlAttributes = new {@class = "form-control", name = "sitename", required = "required", id = "site-name"}})
+                                        @Html.ValidationMessageFor(m => m.SiteName)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="company-name" class="control-label col-md-2 col-sm-2 col-xs-3 required-field">Company Name:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.CompanyName, new {htmlAttributes = new {@class = "form-control", name = "CompanyName", id = "company-name", style = "display:none"}})
+                                        @Html.ValidationMessageFor(m => m.CompanyName)
+                                        @*<input id="company-name" class="form-control col-md-7 col-xs-3" type="text" name="CompanyName" style="display:none">*@
+                                        @Html.DropDownList("CompanyId", ViewBag.companies as IEnumerable<SelectListItem>, "--Select the Company--", new {@class = "form-control", id = "CompanyDdl", name = "CompanyId", required = true})
+                                    </div>
+                                    <div style="margin-top: -15px;">
+                                        Create New Company
+                                    </div>
+                                    <input class="form-control col-md-7 col-xs-3 col-sm-4" type="checkbox" id="checkboxCompany" onclick="showCompanyTextBox()" name="CreateNewCompany" style="float: right; margin-right: 15%; width: 30px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="company-icon" class="control-label col-md-2 col-sm-2 col-xs-3">Company Logo:</label>
+                                    <div class="col-md-3">
+                                        @Html.EditorFor(model => model.CompanyIconPath, new {htmlAttributes = new {@class = "form-control", name = "CompanyIconPath", @readonly = "readonly", id = "CompanyIconPath"}})
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                        <input id="fileCompanyIcon" type="file" style="display: none" name="fileCompanyIcon" onChange="HandlePicchange();">
+                                        <input type="button" class="btn btn-success" value="Browse" id="btnBrowse" onclick="HandlePicBrowseClick();"/>
+                                    </div>
+                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                        <img src="" id="compLogo" style="display: none; height: 50px; width: 50px;" alt="No Image"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="organisation-name" class="control-label col-md-2 col-sm-2 col-xs-3">Organisation Name:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.OrganisationName, new {htmlAttributes = new {@class = "form-control", name = "OrganisationName", id = "organisation-name", style = "display:none"}})
+                                        @Html.ValidationMessageFor(m => m.OrganisationName)
+                                        @*<input id="organisation-name" class="form-control col-md-7 col-xs-3" type="text" name="OrganisationName" style="display:none" onchange="doesOrganisationNameExist()"><label class="messageOrganisation" id="messageOrganisation" style="color:red" />*@
+                                        <select id="organisationDdl" class="form-control">
+                                            <option value="0">--select the organisations--</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-top: -15px;">
+                                        Create New Organisation
+                                    </div>
+                                    <input class="form-control col-md-7 col-xs-3 col-sm-3" type="checkbox" id="checkboxOrganisation" onclick="showOrganistationTextBox()" name="CreateNewOrganisation" style="float: right; margin-right: 15%; width: 30px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="controller-IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">BackGroundColor</label>
+                                    <div class="col-md-2 col-sm-1 col-xs-1">
+                                        @Html.EditorFor(model => model.BackGroundColor, new {htmlAttributes = new {@class = "form-control", name = "BackGroudColor", type = "color"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="controller-IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">Controller IP address:</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                        @Html.EditorFor(model => model.ControllerIpAddress, new {htmlAttributes = new {@class = "form-control", name = "ControllerIpAddress"}})
+                                    </div>
+                                    <label for="controller-Port" class="control-label col-md-1 col-sm-1 col-xs-2">Port:</label>
+                                    <div class="col-md-1 col-sm-1 col-xs-1">
+                                        @Html.EditorFor(model => model.Controller_Port, new {htmlAttributes = new {@class = "form-control", name = "Controller_Port"}})
+                                    </div>
+                                    <label for="controller-Username" class="control-label col-md-1 col-sm-1 col-xs-2">UserName:</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-1">
+                                        @Html.EditorFor(model => model.Controller_UserName, new {htmlAttributes = new {@class = "form-control", name = "Controller_UserName"}})
+                                    </div>
+                                    <label for="controller-Password" class="control-label col-md-1 col-sm-1 col-xs-2">Password:</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-1">
+                                        @Html.EditorFor(model => model.Controller_Password, new {htmlAttributes = new {@class = "form-control", name = "Controller_Password"}})
+                                    </div>
+                                </div>
+                             
+                                //SitecontollerName
+                                <div class="form-group">
+                                    <label for="controller_name" class="control-label col-md-2 col-sm-2 col-xs-3">Controller Type:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @*@Html.DropDownList("SiteControllerName", new SelectList(Enum.GetValues(typeof(ControllerName))), "Select Controller", new { @class = "form-control", @name = "ControllerTypeNameId" })*@
+                                        <select id="SiteControllerName" name="ControllerTypeNameId" class="form-control">
+                                            <option>--Select--</option>
+                                            <option value="10">Fortinet</option>
+                                            <option value="20">Ruckus</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="RtlsWebSocketUrl" class="control-label col-md-2 col-sm-2 col-xs-3">NasIpAddress:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.NasIpAddress, new {htmlAttributes = new {@class = "form-control", name = "NasIpAddress"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="radius-IpAddress" class="control-label col-md-2 col-sm-2 col-xs-3">Radius IP address:</label>
+                                    <div class="col-md-2 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.MySqlIpAddress, new {htmlAttributes = new {@class = "form-control", name = "MySqlIpAddress"}})
+                                    </div>
+                                    <label for="controller-Username" class="control-label col-md-1 col-sm-1 col-xs-3">UserName:</label>
+                                    <div class="col-md-2 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.MySql_UserName, new {htmlAttributes = new {@class = "form-control", name = "MySqlUserName"}})
+                                    </div>
+
+                                    <label for="controller-Password" class="control-label col-md-1 col-sm-1 col-xs-3">Password:</label>
+                                    <div class="col-md-2 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.MySql_Password, new {htmlAttributes = new {@class = "form-control", name = "MySqlPassword"}})
+                                    </div>
+                                    <label for="controller-Port" class="control-label col-md-1 col-sm-1 col-xs-1">SecretKey:</label>
+                                    <div class="col-md-1 col-sm-1 col-xs-1">
+                                        @Html.EditorFor(model => model.MySql_SecretKey, new {htmlAttributes = new {@class = "form-control", name = "MySqlSecretKey"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="DashboardUrl" class="control-label col-md-2 col-sm-2 col-xs-3">Dashboard URL:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.DashboardUrl, new {htmlAttributes = new {@class = "form-control", name = "DashboardUrl"}})
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="RtlsUrl" class="control-label col-md-2 col-sm-2 col-xs-3">RTLS URL:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.RtlsUrl, new {htmlAttributes = new {@class = "form-control", name = "RtlsUrl"}})
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="CpUrl" class="control-label col-md-2 col-sm-2 col-xs-3">CaptivePortal URL:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.CpUrl, new {htmlAttributes = new {@class = "form-control", name = "RtlsUrl"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RtlsPublisherUrl" class="control-label col-md-2 col-sm-2 col-xs-3">RTLS Pulisher Url:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.RtlsPublisherUrl, new {htmlAttributes = new {@class = "form-control", name = "RtlsPublisherUrl"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="WifiUserPageUrl" class="control-label col-md-2 col-sm-2 col-xs-3">WifiUser Page Url:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.WifiUserPageUrl, new {htmlAttributes = new {@class = "form-control", name = "WifiUserPageUrl"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RtlsWebSocketUrl" class="control-label col-md-2 col-sm-2 col-xs-3">RTLS WebSocketUrl Url:</label>
+                                    <div class="col-md-6 col-sm-3 col-xs-3">
+                                        @Html.EditorFor(model => model.RtlsWebSocketUrl, new {htmlAttributes = new {@class = "form-control", name = "RtlsWebSocketUrl"}})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xs-6">
+                                        <label for="Resco_ApiUrl" class="control-label col-md-2 col-sm-2 col-xs-3">Resco ApiUrl:</label>
+                                        <div class="col-md-2 col-sm-2 col-xs-3">
+                                            @Html.EditorFor(model => model.Resco_ApiUrl, new { htmlAttributes = new { @class = "form-control", name = "Resco_ApiUrl" } })
+                                        </div>
+                                        <label for="Resco_UserName" class="control-label col-md-2 col-sm-2 col-xs-3">UserName:</label>
+                                        <div class="col-md-2 col-sm-2 col-xs-3">
+                                            @Html.EditorFor(model => model.Resco_UserName, new { htmlAttributes = new { @class = "form-control", name = "Resco_UserName" } })
+                                        </div>
+                                        <label for="Resco_Password" class="control-label col-md-2 col-sm-2 col-xs-3">Password:</label>
+                                        <div class="col-md-2 col-sm-2 col-xs-3">
+                                            @Html.EditorFor(model => model.Resco_Password, new { htmlAttributes = new { @class = "form-control", name = "Resco_Password" } })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-sm-12 col-md-12 col-lg-12 col-xs-6">
+                                        <label for="Resco_TerminalCode" class="control-label col-md-2 col-sm-2 col-xs-3">TerminalCode:</label>
+                                        <div class="col-md-2 col-sm-2 col-xs-3">
+                                            @Html.EditorFor(model => model.Resco_TerminalCode, new { htmlAttributes = new { @class = "form-control", name = "Resco_TerminalCode" } })
+                                        </div>
+                                        <label for="Resco_DepartmentCode" class="control-label col-md-2 col-sm-2 col-xs-3">DepartmentCode:</label>
+                                        <div class="col-md-2 col-sm-2 col-xs-3">
+                                            @Html.EditorFor(model => model.Resco_DepartmentCode, new { htmlAttributes = new { @class = "form-control", name = "Resco_DepartmentCode" } })
+                                        </div>
+                                        <label for="Resco_RequestId" class="control-label col-md-2 col-sm-2 col-xs-3">Request Id:</label>
+                                        <div class="col-md-2 col-sm-2 col-xs-3">
+                                            @Html.EditorFor(model => model.Resco_RequestId, new { htmlAttributes = new { @class = "form-control", name = "Resco_RequestId" } })
+                                        </div>
+                                   </div>
+                                 </div>
+                                <div class="form-group">
+                                    <label for="FortiGate_Ip" class="control-label col-md-2 col-sm-2 col-xs-3">FireWall IP:</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                        @Html.EditorFor(model => model.FortiGate_Ip, new { htmlAttributes = new { @class = "form-control", name = "FortiGate_Ip" } })
+                                    </div>
+                                    <label for="FortiGate_UserName" class="control-label col-md-1 col-sm-1 col-xs-3">UserName:</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                        @Html.EditorFor(model => model.FortiGate_UserName, new { htmlAttributes = new { @class = "form-control", name = "FortiGate_UserName" } })
+                                    </div>
+                                    <label for="FortiGate_Password" class="control-label col-md-1 col-sm-1 col-xs-3">Password:</label>
+                                    <div class="col-md-2 col-sm-2 col-xs-3">
+                                        @Html.EditorFor(model => model.FortiGate_Password, new { htmlAttributes = new { @class = "form-control", name = "FortiGate_Password" } })
+                                    </div>
+                                    <label for="FortiGate_Port" class="control-label col-md-1 col-sm-1 col-xs-3">Port:</label>
+                                    <div class="col-md-1 col-sm-1 col-xs-3">
+                                        @Html.EditorFor(model => model.FortiGate_Port, new { htmlAttributes = new { @class = "form-control", name = "FortiGate_Port" } })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-3 col-xs-3 col-md-offset-3">
+                                        <button type="submit" class="btn btn-success">Create</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+<!-- footer content -->
+<footer>
+    <div class="clearfix"></div>
+</footer>
+<!-- /footer content -->
+</div>
+</div>
+<!-- jQuery -->
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="../build/js/custom.min.js"></script>
+
+</body>
+</html>
+<script type="text/javascript">
+    function HandlePicBrowseClick() {
+        var fileinput = document.getElementById("fileCompanyIcon");
+        fileinput.click();
+    }
+
+    function HandlePicchange() {
+        var fileinput = document.getElementById("fileCompanyIcon");
+        var textinput = document.getElementById("CompanyIconPath");
+        textinput.value = fileinput.value;
+    }
+
+    function showCompanyTextBox() {
+        if ($('#checkboxCompany').is(':checked')) {
+            $('#CompanyDdl').hide();
+            $('#company-name').show();
+            $('#company-name').prop('required', true);
+        } else {
+            $('#CompanyDdl').show();
+            $('#company-name').hide();
+            $('#company-name').prop('required', false);
+        }
+    }
+
+    function onload() {
+        if ($('#checkboxCompany').is(':checked')) {
+            $('#CompanyDdl').hide();
+            $('#company-name').show();
+        } else {
+            $('#CompanyDdl').show();
+            $('#company-name').hide();
+            $('#CompanyDdl').prop('required', true);
+        }
+    }
+
+    function showOrganistationTextBox() {
+        if ($('#checkboxOrganisation').is(':checked')) {
+            $('#organisation-name').show();
+            $('#organisationDdl').hide();
+        } else {
+            $('#organisationDdl').show();
+            $('#organisation-name').hide();
+        }
+    }
+
+    $("#CompanyDdl").change(function() {
+        if ($(this).val() != "") {
+            $('#organisationddl').val('');
+            var id = $(this).val();
+            $.getJSON("/Admin/GetOrganisations?companyId=" + id,
+                function(data) {
+                    var items = [];
+                    $.each(data.lstOrganisation,
+                        function(key, value) {
+                            items.push("<option value=" + this.value + ">" + this.text + "</option>");
+                        });
+                    $("#organisationDdl").html(items.join(' '));
+                    $("#organisationDdl").val(data.SelectedOrganisation);
+                    $("#BackGroundColor").val(data.BackGroundColor);
+                    $("#compLogo").show();
+                    $("#CompanyIconPath").val(data.cmpImage);
+                    $("#compLogo").attr('src', data.cmpImage);
+                });
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        navigation();
+    });
+</script>

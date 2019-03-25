@@ -1,0 +1,242 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/ManageWifiUserController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/ManageWifiUserService.js"></script>
+</head>
+<body class="nav-md"  ng-app="wifiModule">
+    <div class="container body" >
+        <div class="main_container" ng-controller="ManageWifiUserController">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="" ng-init="GetSSID()">
+                    <div class="page-title">
+                        <div class="title_left">
+                        </div>
+                    </div>
+                    <form name="RegisterForm" ng-submit="CreateNewWifiUserByAdmin()">
+                        <div class="form-horizontal">
+                            <div class="clearfix"></div>
+                            <div class="col-md-12 text-center">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-1 required-field" for="Site">SSID:</label>
+                                    <div class="col-md-3">
+                                        @*@Html.DropDownList("siteDdl", ViewBag.sites as IEnumerable<SelectListItem>, "--Select the Site--", new { @class = "form-control col-md-7 col-xs-12", @id = "SiteDdl", @name = "SiteDdl", @onchange = "saveToLocalStorage()", @Selected = true })*@
+                                        <select ng-model="SelectedSSID" class="form-control col-md-7 col-xs-12" required>
+                                            <option ng-repeat="itemNetWorkOfSite in SSIdDetails" value="{{itemNetWorkOfSite.SsidName}}" class="form-control col-md-7 col-xs-12">
+                                                {{itemNetWorkOfSite.SsidName}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+                            <center>
+                              <h2><b>Create Wi-Fi User</b></h2>
+                          </center> 
+                            <div class="form-group">
+                                <label class="control-label col-sm-2 required-field" for="Username">Username:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="userName" placeholder="" ng-model="item.WifiUser.UserName" required>
+
+                                </div>
+                                <label class="control-label col-sm-2" for="AddressLine1">Address Line 1:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.UsersAddress.Address1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="Forename">Forename:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="Forename" placeholder="" name="FirstName" ng-model="item.WifiUser.FirstName">
+                                </div>
+                                <label class="control-label col-sm-2" for="Address2">Address Line 2:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.UsersAddress.Address2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="Surname">Surname:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="Surname" placeholder="" ng-model="item.WifiUser.LastName">
+                                </div>
+                                <label class="control-label col-sm-2" for="County">County:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.UsersAddress.County">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2 required-field" for="pwd">Password:</label>
+                                <div class="col-md-3">
+                                    <input type="password" class="form-control" id="pwd" placeholder="" name="Password" ng-model="item.WifiUser.Password" required>
+                                </div>
+                                <label class="control-label col-sm-2" for="pc">Postcode:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="pc" placeholder="" name="" ng-model="item.WifiUser.UsersAddress.PostCode">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2 " for="mobileNumber">Mobile Number:</label>
+                                <div class="col-md-3">
+                                    <input type="number" class="form-control" id="mobileNumber" placeholder="" name="MobileNumer" ng-model="item.WifiUser.MobileNumer">
+                                </div>
+                                <label class="control-label col-sm-2" for="Country">Country:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="Country" placeholder="" name="Country" ng-model="item.WifiUser.UsersAddress.Country">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2 required-field" for="email">Email Address:</label>
+                                <div class="col-md-3">
+                                    <input type="email" class="form-control" id="email" placeholder="" name="Email" ng-model="item.WifiUser.Email" required>
+                                </div>
+                                <label class="control-label col-sm-2" for="Custom1">Custom field 1 : </label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.Custom1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="gender">Gender:</label>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="GenderId" id="GenderId" ng-model="item.WifiUser.GenderId">
+                                        <option value="1">Male</option>
+                                        <option value="2">Female</option>
+                                        <option value="3">Not Answered</option>
+                                    </select>
+                                </div>
+                                <label class="control-label col-sm-2" for="Custom2">Custom field 2 : </label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.Custom2">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="ageRange">Age Range:</label>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="AgeId" id="AgeId" ng-model="item.WifiUser.AgeId">
+                                        <option value="1">0-17</option>
+                                        <option value="2">18-24</option>
+                                        <option value="3">25-34</option>
+                                        <option value="4">35-44</option>
+                                        <option value="5">45-54</option>
+                                        <option value="6">55-64</option>
+                                        <option value="7">65+</option>
+                                    </select>
+                                </div>
+                                <label class="control-label col-sm-2" for="Custom3">Custom field 3 : </label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.Custom3">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="birthDate" ng-model="item.WifiUser.BirthDate">Birth Date:</label>
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control" id="birthDate" name="BirthDate">
+                                </div>
+                                <label class="control-label col-sm-2" for="Custom4">Custom field 4 : </label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="text" placeholder="" ng-model="item.WifiUser.Custom4">
+                                </div>
+                            </div>
+
+                            @*<div class="form-group">
+                                <label class="control-label col-sm-2" for="Group">Group:</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="Group" name="GroupName">
+                                    @Html.DropDownList("GroupDdl", ViewBag.groups as IEnumerable<SelectListItem>, "--Select the Group--", new { @class = "form-control", @id = "GroupDdl", @name = "GroupName", @onchange = "selectGroup()" })
+                                </div>
+                                <label for="custom-5" class="control-label col-sm-2">Customer Field 5 :  </label>
+                                <div class="col-md-3 ">
+                                    <input class="form-control col-md-7 col-xs-12" type="checkbox" id="Custom5" name="Custom5" style="width:30px;" ng-model="item.Custom5">
+                                </div>
+                            </div>*@
+
+                            <div class="form-group">
+                                <label for="auto-login" class="control-label col-sm-2">Auto-login users:</label>
+                                <div class="col-md-3">
+                                    <input class="form-control col-md-7 col-xs-12" type="checkbox" id="checkbox1" name="AutoLogin" style="width:30px;" ng-model="item.WifiUser.AutoLogin">
+                                </div>
+                                <label for="custom-6" class="control-label col-sm-2">Customer Field 6 :   </label>
+                                <div class="col-md-3 ">
+                                    <input class="form-control col-md-7 col-xs-12" type="checkbox" id="Custom6" name="Custom6" style="width:30px;" ng-model="item.WifiUser.Custom6">
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+                            <div class="container">
+                                <div class="row">
+                                    <div class="control-group" id="fields">
+                                        <label class="control-label col-sm-2" for="field1">Mac Address:</label>
+                                        <div class="controls">
+                                            <div class="entry input-group col-xs-3">
+                                                <input type="text" ng-model="item.Device.MacAddress" class="form-control" />
+                                            </div>
+                                        </div>
+                                        @*<div ng-repeat="Mac in lstMacAddressData">
+                                                <div class="entry input-group col-xs-3">
+                                                    <input type="text" ng-model="Mac.MacAddress" class="form-control" />
+                                                    </div>
+                                                </div>
+                                         </div>*@
+                                     </div>
+                                    @*<div class="form-group">
+                                        <div class="col-md-5 col-sm-5">
+                                            <input type="button" class="btn btn-success col-xs-pull-4" name="plus1" id="plus1" value="+" ng-click="addMac()"> <input type="button" class="btn btn-danger" name="minus1" id="minus1" value="-" ng-click="removeMac()">
+                                        </div>
+                                    </div>*@
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="submit" id="createUser" class="btn btn-success pull-right" value="Create User" />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <br />
+                    <br />
+                </div>
+            </div>
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    @*<script src="../vendors/DateJS/build/date.js"></script>*@
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function()
+        {
+        navigation();
+        })
+</script>

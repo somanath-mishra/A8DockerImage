@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "EditLocation";
+    Layout = "~/Views/Shared/LocationDashboardPartialView/_CommonLayout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en" ng-app="a8DashboardModule">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/a8Dashboard_Angular/A8DashBoardApp.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/Spin.js"></script>
+    <link href="~/Bootstrap 3.3.7/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/Angular_Notification/angular-ui-notification.js"></script>
+    <link href="~/Scripts/Angular_Notification/angular-ui-notification.css" rel="stylesheet" />
+    <script src="~/a8Dashboard_Angular/Controllers/LocationIndicatorController.js"></script>
+    <script src="~/a8Dashboard_Angular/Services/LocationIndicatorService.js"></script>
+</head>
+<body class="nav-md">
+    <div class="container body" ng-controller="LocationIndicatorController">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <div class="right_col" role="main" ng-init="editDetails()" style="min-height: 751px;">
+                <div class="form-horizontal">
+                    <input data-val="true" data-val-number="The field AreaOfInterestId must be a number." data-val-required="The AreaOfInterestId field is required." id="AreaOfInterestId" name="AreaOfInterestId" type="hidden" value="">
+                    <input type="hidden" name="SiteName">
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="Name">Name</label>
+                        <div class="col-md-10">
+                            <input class="form-control ng-pristine ng-untouched ng-valid ng-not-empty" style="width:25%;" type="text" name="Name" id="Name" ng-model="editInfo.Name">
+                            <input type="text" ng-model="editInfo.LoctionIndicator" hidden="" class="ng-pristine ng-untouched ng-valid ng-empty">
+                            <input type="text" ng-model="editInfo.NeighBourName" hidden="" class="ng-pristine ng-untouched ng-valid ng-empty">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="LoctionIndicator">LoctionIndicator</label>
+                        <div class="col-md-10" id="txtDiv">
+                            <!-- ngIf: editInfo.lstMapLocations.length > 0 --><div ng-if="editInfo.lstMapLocations.length > 0" class="ng-scope">
+                                <!-- ngRepeat: item in editInfo.lstMapLocations --><div ng-repeat="item in editInfo.lstMapLocations" class="ng-scope">
+                                    <input type="text" ng-model="item.AreaOfInterestId" hidden="" class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <input type="text" ng-model="item.LoctionIndicatorId" hidden="" class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <input class="form-control ng-pristine ng-untouched ng-valid ng-not-empty" style="width:25%;" type="text" ng-model="item.LoctionIndicator" name="LoctionIndicator">
+                                    <input type="button" ng-show="item.LoctionIndicatorId>0" value="Delete" class="btn btn-primary" style="color:white;color:white;padding-top: 6px;margin-top: -54px;margin-left: 289px;" ng-click="deleteLocationIndicator(item.AreaOfInterestId,item.LoctionIndicatorId)">
+                                </div><!-- end ngRepeat: item in editInfo.lstMapLocations -->
+                            </div><!-- end ngIf: editInfo.lstMapLocations.length > 0 -->
+                            <!-- ngIf: editInfo.lstMapLocations.length===0 -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-10 col-sm-10 pull-right">
+                            <input type="button" class="btn btn-success" name="plus" id="plus" value="+" ng-click="addLocationIndicator()"> <input type="button" class="btn btn-danger" name="minus" id="minus" value="-" ng-click="removeLocationIndicator()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="NeighBourName">NeighBourName</label>
+                        <div class="col-md-10" id="txtDiv1">
+                            <!-- ngIf: editInfo.lstNeighBourMaps.length -->
+                            <!-- ngIf: editInfo.lstNeighBourMaps.length===0 --><div ng-if="editInfo.lstNeighBourMaps.length>0" class="ng-scope">
+                                <!-- ngRepeat: item in editInfo.lstMapLocations --><div ng-repeat="item in editInfo.lstNeighBourMaps" class="ng-scope">
+                                     <input type="text" ng-model="item.NeighBourId" hidden="" class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                     <input type="text" ng-model="item.AreaOfInterestId" hidden="" class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                     <input class="form-control ng-pristine ng-untouched ng-valid ng-not-empty" style="width:25%;" type="text" ng-model="item.NeighBourName" name="NeighBourName">
+                                     <input type="button" ng-show="item.NeighBourId>0" value="Delete" class="btn btn-primary" style="color:white;color:white;padding-top: 6px;margin-top: -54px;margin-left: 289px;" ng-click="deleteLocationIndicator(item.AreaOfInterestId,item.LoctionIndicatorId)">
+                                 </div><!-- end ngRepeat: item in editInfo.lstMapLocations -->
+
+                                @*<input class="form-control ng-pristine ng-valid ng-empty ng-touched" style="width:25%;" name="NeighBourName" type="text" ng-model="item.NeighBourName">
+                                <input type="text" ng-model="item.NeighBourName" name="NeighBourName" hidden="" class="ng-pristine ng-untouched ng-valid ng-empty">*@
+                            </div><!-- end ngIf: editInfo.lstNeighBourMaps.length===0 -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-10 col-sm-10 pull-right">
+                            <input type="button" class="btn btn-success" name="plus1" id="plus1" value="+" ng-click="addNeighBourName()"> <input type="button" class="btn btn-danger" name="minus1" id="minus1" value="-" ng-click="removeNeighBourName()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="button" value="Save" class="btn btn-success" id="btnsubmit" ng-click="editPost()">
+                            <a href="/LocationIndicators/LocationsMapping" class="btn btn-success" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId'); return false;" role="button" style="cursor:pointer">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/a8Dashboard_Angular/Controllers/LocationIndicatorController.js"></script>
+    <script src="~/a8Dashboard_Angular/Services/LocationIndicatorService.js"></script>
+</body>
+</html>
+

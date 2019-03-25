@@ -1,0 +1,138 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/UsageController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/UsageService.js"></script>
+    <style>
+        .selected {
+            background-color: #f6bdbd;
+        }
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body" ng-controller="UsageController" ng-init="GetSSID()">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <div class="right_col" role="main" style="min-height: 751px;">
+                <div class="container">
+                    <div class="form-inline ng-pristine ng-valid">
+                        <label for="Site">SSID:</label>
+                        <select ng-model="SelectedSSID" class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-change="GetPackagePerSSIDWifiCoord()">
+                            <option ng-repeat="itemNetWorkOfSite in lstNetWorkOfSitesData" value="{{itemNetWorkOfSite}}" class="form-control">
+                                {{itemNetWorkOfSite}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <br /><br />
+                <div id="usagepackageid">
+                    <table class="table table-hover table-responsive" id="UsagePackageTable">
+                        <thead>
+                            <tr style="color:black">
+                                <th style="display:none;">
+                                    SSIdPackageId
+                                </th>
+                                <th style="display:none;">
+                                    PackageId
+                                </th>
+                                <th>
+                                    Package Name
+                                </th>
+                                <th>
+                                    Total Users
+                                </th>
+                                <th>
+                                    Active Users
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Limit
+                                </th>
+                                <th>
+                                    Speed
+                                </th>
+                                <th>
+                                    From
+                                </th>
+                                <th>
+                                    Price
+                                </th>
+                                @*<th>
+                                        From
+                                    </th>
+                                    <th>
+                                        Price
+                                    </th>*@
+                                <th>
+                                    To
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="item in SSIDDetails" ng-class="{selected: item.PackageId === idSelectedItem}">
+                            <tr class="compare-row" ng-click=>
+                                <td style="display:none;">
+                                    {{item.SSIdPackageId}}
+                                </td>
+                                <td style="display:none;">
+                                    {{item.PackageId}}
+                                </td>
+                                <td>
+                                    {{item.PackageName}}
+                                </td>
+                                <td>
+                                    {{item.TotalUsers}}
+                                </td>
+                                <td>
+                                    {{item.ActiveUsers}}
+                                </td>
+                                <td>
+                                    {{item.PackageType}}
+                                </td>
+
+                                <td>
+                                    {{item.PackageLimit}}
+                                </td>
+
+                                <td>
+                                    {{item.SpeedType}}
+                                </td>
+
+                                <td>
+                                    {{item.FromDateTime|date: "dd-MM-yyyy hh:mm:ss"}}
+                                </td>
+                                <td>
+                                    {{item.Price}}
+                                </td>                                
+                                <td>{{item.ToDateTime|date: "dd-MM-yyyy hh:mm:ss"}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <hr style="border-top: 1px solid #5021de;" />
+                                        
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    localStorage.setItem("SiteId", '@Session["SiteId"]');
+    localStorage.setItem("cptUrl", '@Session["CpUrl"].ToString().Trim()');
+    localStorage.setItem("NetworkSiteIds", "@ViewBag.NetworkListSSIds");
+</script>
+

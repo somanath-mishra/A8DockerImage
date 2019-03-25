@@ -1,0 +1,155 @@
+﻿@using Microsoft.AspNet.Identity;
+@using A8PlatForm.Domains.ViewModels.CPAdmin;
+@model IEnumerable<NetworkOfSiteDTO>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .selected {
+            background-color: #f6bdbd;
+        }
+    </style>
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" style="min-height: 751px;">
+                <div class="container">
+                    <div class="container-fluid">
+                        <div class="form-horizontal row">
+                            <div class="col-md-7 col-sm-7 col-lg-7 form-group">
+                                <label for="Site" class="control-label col-lg-2 col-md-2 col-sm-2">Site:</label>
+                                <div class="col-lg-10 col-md-10 col-sm-10">
+                                    @Html.DropDownList("SiteId", ViewBag.Sites as IEnumerable<SelectListItem>, new { @class = "form-control", @id = "SiteDdl", @name = "SiteId", @required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8 form-group" style="border:solid 1px #ccc; background-color:white;margin-left: 11%;width: 56.5%;">
+                                <div class="row">
+                                    <label for="cptPortal" class="control-label col-lg-8 col-md-8 col-sm-6" style="text-align:start">Captive Portal:</label>
+                                    @Html.CheckBox("captivePortal", (bool)(ViewBag.CpUrl != null), new { @disabled = "disabled", @class = "col-sm-2 col-lg-2 col-md-2" })
+                                </div>
+                                <div class="row">
+                                    <label for="locDashboard" class="control-label col-lg-8 col-md-8 col-sm-6" style="text-align:start">Location Dashboard:</label>
+                                    @Html.CheckBox("locationDashboard", (bool)(ViewBag.DashboardUrl != null), new { @disabled = "disabled", @class = "col-sm-2 col-lg-2 col-md-2" })
+                                </div>
+                                <div class="row">
+                                    <label for="realTimeLocServ" class="control-label col-lg-8 col-md-8 col-sm-6" style="text-align:start">Real Time Location Services:</label>
+                                    @Html.CheckBox("realTimeLocationServ", (bool)(ViewBag.RtlsUrl != null), new { @disabled = "disabled", @class = "col-sm-2 col-lg-2 col-md-2" })
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 form-group" id="captivePortalSSID" style="width:58.5%;margin-left:10.11%">
+                                <div class="table-responsive">
+                                    <table class="table" id="CaptivePortalTable" style="background-color:white;">
+                                        <thead style="background-color:#ccc;color:black">
+                                            <tr>
+                                                @*<th style="display: none;">
+                                                    SSId
+                                                </th>*@
+                                                <th>
+                                                    SSID Name
+                                                </th>
+                                                <th>
+                                                    Sponsor Name
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Broadcast
+                                                </th>
+                                                <th>
+                                                    Control Type
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    @*<td style="display: none;">@Html.DisplayFor(modelItem => item.NetWorkOfSiteId)</td>*@
+                                                    <td>@Html.DisplayFor(modelItem => item.SsidName)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.SponsorName)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.BroadCast)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.ControlType.ControlTypeName)</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <!-- <script src="../vendors/DateJS/build/date.js"></script>-->
+    <script src="~/build/js/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/Scripts/Home_Index.js"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+    localStorage.setItem("SiteId", $("#SiteDdl").val());
+    localStorage.setItem("CpUrl", "@ViewBag.CpUrl");
+    localStorage.setItem("dashboardUrl", "@ViewBag.DashboardUrl");
+    localStorage.setItem("rtlsUrl", "@ViewBag.RtlsUrl");
+    localStorage.setItem("SiteName", "@ViewBag.SiteName");
+    localStorage.setItem("cptUrl", "@ViewBag.cptUrl");
+    localStorage.setItem("BackGroundColor", "@ViewBag.BackGroundColor")
+    localStorage.setItem("CompanyIcon", "@ViewBag.CompanyImage");
+    localStorage.setItem("WifiUserPageUrl","@ViewBag.WifiUserPageUrl");
+
+    if ($("td:contains('MeetGreet')").length > 0)
+    {
+        localStorage.setItem("MeetGreet", "True");
+       
+    }
+    else
+    {
+        localStorage.setItem("MeetGreet", "False");
+        $("#WifiUsageBusi").hide();
+    }
+
+    $(document).ready(function () {
+        var SiteName = $('#SiteDdl option').filter(':selected').text();
+        localStorage.setItem("SiteName", SiteName);
+        GetSiteName();
+        if ($("#captivePortal").is(':checked'))
+        {
+            $("#captivePortalSSID").show();
+        }
+        $("#SiteDdl").change(function () {
+            var SiteName = $('#SiteDdl option').filter(':selected').text();
+            localStorage.setItem("SiteName", SiteName);
+            window.location.href = '/BusinessUserHome/Index?SiteId=' + $("#SiteDdl").val();
+        })
+        navigation();
+        StoreToken();
+    });
+</script>

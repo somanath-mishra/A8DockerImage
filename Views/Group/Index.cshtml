@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <script src="~/Scripts/navigationJS.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/GroupController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/GroupService.js"></script>
+    <style>
+        td {
+            border: 1px #DDD solid;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .selected {
+            background-color: brown;
+            color: #FFF;
+        }
+    </style>
+    <style>
+        .highlight {
+            background-color: red;
+        }
+    </style>
+    <style>
+        /*    */
+        .cellContainer {
+            width: 25%;
+            float: left;
+        }
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" ng-controller="GroupController">
+                <br />
+                <h4> User Groups</h4>
+                <div class="row container-fluid">
+                    <div class="col-lg-12" ng-init="GetGroups()">
+                        <div style="top:35px;width:700px; height:250px; overflow:auto;">
+                            <table class="table table-hover table-responsive" id="resultTable">
+                                <thead>
+                                    <tr style="background-color:#ccc;color:black">
+                                        <th style="display:none;">
+                                            GroupId
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Rule
+                                        </th>
+
+                                        <th>
+                                            # of Users
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="pointer" style="width:320px; height:60px; overflow:auto;">
+                                   <tr ng-repeat="item in lstGroups">
+                                       <td>{{item.GroupId}}</td>
+                                       <td>{{item.GroupName}}</td>
+                                       <td>{{item.Rule}}</td>
+                                       <td></td>
+                                       <td>
+                                           <input type="button" class="btn btn-danger" value="Delete" ng-click="DeleteGroup(item)"/>
+                                       </td>
+                                   </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    <form id="CreateGroupForm" ng-submit="CreateGroup()">
+                        <div class="form-horizontal form-label-right" style="margin-left:70%">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Name:</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" id="name" placeholder="" name="GroupName" ng-model="Group.GroupName" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Rule:</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" id="rule" name="Rule" placeholder="" ng-model="Group.Rule">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <input type="submit" class="btn btn-success" value="Create Group" style="margin-left:20%"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <br />
+                <br />
+                <br />
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer></footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+       navigation();
+     });
+</script>
+ 

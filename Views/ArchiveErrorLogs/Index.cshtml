@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "ArchiveErrorLog";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/CheckBox.css" rel="stylesheet" />
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                   
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <form>
+                                        <div style="text-align:center">
+                                            <b>EXPORT LOG DATA</b>
+                                        </div>
+                                    </form>
+                                    <br />
+                                    <div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                       
+                                        @using (Html.BeginForm("Index", "ArchiveErrorLogs", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            <div class="form-group">                                              
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="SiteName" class="form-control col-md-7 col-xs-12" value="" type="hidden" name="SiteName" readonly>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="FromDate" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">From Date:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="FromDate" class="form-control col-md-7 col-xs-12" type="date" name="FromDate" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="ToDate" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">To Date:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="ToDate" class="form-control col-md-7 col-xs-12" type="date" name="ToDate" required>
+                                                </div>
+                                            </div>
+
+                                            @*<div class="form-group">
+                                                <label for="ExportTo" class="control-label col-md-3 col-sm-3 col-xs-12">Export To:</label>
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="ExportTo" class="form-control col-md-7 col-xs-12" type="date" name="ExportTo" required>
+                                                </div>
+                                            </div>*@
+                                                                                        
+                                            <div class="form-group">
+                                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                   @* <input type="button" id="CancelArchive" class="btn btn-danger" value="Cancel"/>*@
+                                                    <input type="button" id="CancelArchive" class="btn btn-danger" value="Cancel" onclick="@("window.location.href='" + @Url.Action("Index", "Home") + "'");" />
+                                                    <input type="submit" id="SaveArchive" class="btn btn-success" value="Commit"/>
+                                                </div>
+                                            </div>
+                                        }
+                                        <br /><br />
+
+                                        <form>
+                                            <div style="text-align:center">
+                                                <b>LOG DATA</b>
+                                            </div>
+                                        </form>
+
+                                        <br />
+                                        @using (Html.BeginForm("UpdateSite", "ArchiveErrorLogs", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            <div class="form-group">
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <input id="SiteId" class="form-control col-md-7 col-xs-12" value="" type="hidden" name="SiteId" readonly>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-inline">
+                                                <label for="Clear log after" class="control-label col-md-3 col-sm-3 col-xs-12">Clear log after:</label>
+                                                <select id="ClearErrorLogDays" class="form-control" name="ClearErrorLogDays">
+                                                    <option value="7">7</option>
+                                                    <option value="14">14</option>
+                                                    <option value="30">30</option>
+                                                    <option value="60">60</option>
+                                                    <option value="90">90</option>
+                                                 </select>&emsp;<span>days</span>&emsp;&emsp;
+                                            @*</div>
+
+                                            <div class="form-group">*@
+                                                @*<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">*@                                                                                                        
+                                                    <input type="submit" id="UpdateClearLogDays" class="btn btn-success" value="Update" />
+                                                @* </div> *@
+                                            </div>
+                                        }
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /page content -->
+        <!-- footer content -->
+        <footer>
+
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+
+</body>
+</html>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        navigation();
+        $("#ClearErrorLogDays").val(@ViewBag.ClearErrorLogDays);
+    });
+       
+    $("#SaveArchive").click(function () {
+        $("#SiteName").val=localstorage.getItem('SiteName');
+    });
+    var SiteName = localStorage.getItem("SiteName");
+    var SiteId = localStorage.getItem("SiteId");
+
+    document.getElementById('SiteName').value = SiteName;
+    document.getElementById('SiteId').value = SiteId;
+    //localStorage.setItem("SiteId", SiteId_Value);
+    
+    //$("#SaveArchive").click(function () {
+    //    alert($("#FromDate").val());
+    //    var FormData = { "FromDate":$("#FromDate").val(), "ToDate":$("#ToDate").val() }
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/ArchiveErrorLogs/Index",
+    //        data: FormData,
+    //        async:false,
+    //        //dataType: "json",
+    //        success: function (response) {
+    //            alert(response.responseText);
+               
+    //        },
+    //        failure: function (response) {
+    //            alert(response.responseText);
+    //        },
+    //        error: function (response) {
+    //            alert(response.responseText);
+    //        }
+            
+    //    });
+    //});
+</script>

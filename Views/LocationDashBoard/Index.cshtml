@@ -1,0 +1,409 @@
+﻿@{
+    Layout = "~/Views/Shared/LocationDashboardPartialView/_CommonLayout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en" ng-app="a8DashboardModule">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="~/Bootstrap 3.3.7/bootstrap.min.js"></script>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <title>Location Dashboard</title>
+    <!-- Custom CSS -->
+    <link href="~/Style/sb-admin-2.css" rel="stylesheet" />
+    <script src="~/a8Dashboard_Angular/Controllers/LocationController.js"></script>
+    <script src="~/a8Dashboard_Angular/Services/LocationService.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</head>
+<body ng-controller="LocationController" style="padding-top:0px"> 
+   <div class="container" >
+         <div class="row">
+             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                <label for="Locations" style="text-align:center" ng-init="getAreaOfInterest()">Locations</label>
+               <div>
+                   <select class="form-control" ng-model="ddlSelectLocation">
+                       <option value="" label="Please Select"></option>
+                       <option ng-repeat="location in userslocation" value="{{location.AreaOfInterestId}}">
+                           {{location.Name}}
+                       </option>
+                   </select>
+              </div>
+          </div>
+             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+               <label for="Date" style="text-align:center">Date</label>
+                    <div>
+                       <div class="dropdown">
+                           <button class="form-control" data-toggle="dropdown">
+                              Select
+                              <span class="caret"></span>
+                            </button>
+                             <div class="dropdown-menu">
+                               <datepicker ng-model="SelectDate" class="well well-sm" custom-class="getDayClass(date, mode)" date-disabled="disabledDates(date,mode)"></datepicker>
+                              </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        <label for="HourRange">Hour Range</label>
+                        <select class="form-control" ng-model="FromHour">
+                            <option ng-selected="true">
+                                HourFrom
+                            </option>
+                            <option value="0:00">
+                                0:00
+                            </option>
+                            <option value="1:00">
+                                1:00
+                            </option>
+                            <option value="2:00">
+                                2:00
+                            </option>
+                            <option value="3:00">
+                                3:00
+                            </option>
+                            <option value="4:00">
+                                4:00
+                            </option>
+                            <option value="5:00">
+                                5:00
+                            </option>
+                            <option value="6:00">
+                                6:00
+                            </option>
+                            <option value="7:00">
+                                7:00
+                            </option>
+                            <option value="8:00">
+                                8:00
+                            </option>
+                            <option value="9:00">
+                                9:00
+                            </option>
+                            <option value="10:00">
+                                10:00
+                            </option>
+                            <option value="11:00">
+                                11:00
+                            </option>
+                            <option value="12:00">
+                                12:00
+                            </option>
+                            <option value="13:00">
+                                13:00
+                            </option>
+                            <option value="14:00">
+                                14:00
+                            </option>
+                            <option value="15:00">
+                                15:00
+                            </option>
+                            <option value="16:00">
+                                16:00
+                            </option>
+                            <option value="17:00">
+                                17:00
+                            </option>
+                            <option value="18:00">
+                                18:00
+                            </option>
+                            <option value="19:00">
+                                19:00
+                            </option>
+                            <option value="20:00">
+                                20:00
+                            </option>
+                            <option value="21:00">
+                                21:00
+                            </option>
+                            <option value="22:00">
+                                22:00
+                            </option>
+                            <option value="23:00">
+                                23:00
+                            </option>
+                        </select><br />
+                        <select class="form-control" ng-model="ToHour">
+                            <option ng-selected="true">
+                                HourTo
+                            </option>
+                            <option value="1:00">
+                                1:00
+                            </option>
+                            <option value="2:00">
+                                2:00
+                            </option>
+                            <option value="3:00">
+                                3:00
+                            </option>
+                            <option value="4:00">
+                                4:00
+                            </option>
+                            <option value="5:00">
+                                5:00
+                            </option>
+                            <option value="6:00">
+                                6:00
+                            </option>
+                            <option value="7:00">
+                                7:00
+                            </option>
+                            <option value="8:00">
+                                8:00
+                            </option>
+                            <option value="9:00">
+                                9:00
+                            </option>
+                            <option value="10:00">
+                                10:00
+                            </option>
+                            <option value="11:00">
+                                11:00
+                            </option>
+                            <option value="12:00">
+                                12:00
+                            </option>
+                            <option value="13:00">
+                                13:00
+                            </option>
+                            <option value="14:00">
+                                14:00
+                            </option>
+                            <option value="15:00">
+                                15:00
+                            </option>
+                            <option value="16:00">
+                                16:00
+                            </option>
+                            <option value="17:00">
+                                17:00
+                            </option>
+                            <option value="18:00">
+                                18:00
+                            </option>
+                            <option value="19:00">
+                                19:00
+                            </option>
+                            <option value="20:00">
+                                20:00
+                            </option>
+                            <option value="21:00">
+                                21:00
+                            </option>
+                            <option value="22:00">
+                                22:00
+                            </option>
+                            <option value="23:00">
+                                23:00
+                            </option>
+                            <option value="23:59">
+                                24:00
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        <label for="Date" style="text-align:center">Dwell Time</label>
+                        <div>
+                            <div>
+                                <select class="form-control" ng-model="DwellTime">
+                                    <option ng-selected="true">
+                                        --Select--
+                                    </option>
+                                    <option value="1">
+                                        1
+                                    </option>
+                                    <option value="2">
+                                        2
+                                    </option>
+                                    <option value="5">
+                                        5
+                                    </option>
+                                    <option value="10">
+                                        10
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-2 col-xs-2">
+                        <br />
+                        <input type="button" class="btn-primary btn ui-spinner-button" value="Update" ng-disabled="exporting" required ng-init="button=true" ng-click="GenerateReport()" />
+                    </div>
+                </div>
+                <br/>
+                <div class="container-fluid">
+                     <label class="center">{{lblReport}}</label> 
+                </div>
+                <br/>
+                <div class="row">     
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Connections</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_speaker_phone_3x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;"/>
+                                    <h4>Total</h4>
+                                    <h4>{{Report.Content.NoOfConnection}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel  panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Dwell Time (Min)</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_query_builder_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <h4>Average</h4>
+                                    <div>
+                                        <h4>{{Report.Content.AvgDwelltime}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel  panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Visits</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_directions_walk_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <div>
+                                        <div>
+                                            <div>
+                                                <h4>New</h4>
+                                                <div>
+                                                    <h4>{{Report.Content.NoOfNewVisits}}</h4>
+                                                </div>
+                                            </div>
+                                            <div style="margin-left:70px;">
+                                                <h4>Return</h4>
+                                                <div>
+                                                    <h4>{{Report.Content.NoOfReturns}}</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                    
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Busiest (Visits)</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_query_builder_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <h4>Hour</h4>
+                                    <div>
+                                        <h4>{{Report.Content.BusiestVisitHour}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                  
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Visit Frequency</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_directions_walk_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <h4>Average</h4>
+                                    <div>
+                                        <h4>{{Report.Content.AvgFrequency}}</h4>
+                                    </div>
+                                    <span us-spinner="{radius:30, width:8, length: 16}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Visit Bounce</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_query_builder_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <div>
+                                        <h4>Dwell+2mins</h4>
+                                        <div>
+                                            <h4>{{Report.Content.VisitBounseForTwoMin}}%</h4>
+                                        </div>
+                                    </div>
+                                    <div style="margin-left:70px;">
+                                        <h4>Dwell+5mins</h4>
+                                        <div>
+                                            <h4>{{Report.Content.VisitBounseForFiveMin}}%</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                                      
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Busiest Passers By</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_query_builder_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <h4>Hour</h4>
+                                    <div>
+                                        <h4>{{Report.Content.BusiestVisitPassersBy}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Window Conversion</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_assessment_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <div>
+                                        <h4>
+                                            {{Report.Content.WindowConversion}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="panel panel-default" id="panelTes">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Passers By</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <img src="~/fonts/ic_directions_walk_black_24dp_2x.png" style="font-size:50px;height:40px;float: left;margin-right:30px;" />
+                                    <h4>Total</h4>
+                                    <div>
+                                        <h4>{{Report.Content.NoOfPassersBy}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+              
+                </div>
+            </div>
+    <!-- /.row -->
+    <!-- /#wrapper -->
+    <!-- jQuery -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.LocationCheckbox').click(function () {
+                $('.LocationCheckbox').not(this).prop('checked', false);
+            });
+            $('.btn-sm').click(function (e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>

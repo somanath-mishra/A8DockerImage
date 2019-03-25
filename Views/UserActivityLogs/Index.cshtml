@@ -1,0 +1,142 @@
+﻿﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <link href="~/Vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Vendors/datatable/grid.css" rel="stylesheet" />
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <script src="~/Scripts/navigationJS.js"></script>
+    <link href="~/Content/ajaxSpinner.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main" style="height:1800px">
+                <div id="ajaxSpinnerContainer">
+                    <img src="/build/images/loading.gif" id="ajaxSpinnerImage" title="loading..." />
+                </div>
+                <div id="grid_paging" style="margin:5px auto;"></div>
+                <br />
+                <center>
+                    <h3>Registration Incomplete</h3>
+                </center>
+                <div class="panel-body">
+                    <div>
+                        <div role="grid">
+                            <div class="row">
+                                <div class="col-sm-12 pq-grid-title ui-corner-top">
+                                    <div>
+                                        <label class="col-lg-1 col-md-1 col-sm-1">From Date - To Date:</label>
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <input type="text" id="dtFromDate" name="datetimes" class="form-control">
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            @Html.DropDownList("NetWorkOfSiteId", ViewBag.Ssids as IEnumerable<SelectListItem>, new { @class = "form-control", @id = "SsidDdl", @name = "NetWorkOfSiteId", @required = "required" })
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
+                                            <select id="NumberOfRecord" class="form-control NumberOfRecord" name="NumberOfRecord">
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                                <option value="150">150</option>
+                                                <option value="200">200</option>
+                                            </select>
+                                        </div>
+                                        <input type="button" class="btn btn-success col-lg-1 col-md-1 col-sm-1" value="Find" id="btnFind" />
+                                        <input type="button" class="btn btn-success col-lg-1 col-md-1 col-sm-1" value="Export" id="btnExport" />
+                                        <input type="button" class="btn btn-success col-lg-1 col-md-1 col-sm-1" value="Refresh" id="btnGetCount" />
+                                        <br />
+                                        <font size='4'>
+                                            <p>
+
+                                            </p>
+                                        </font>
+                                        <div id="ajaxSpinnerContainer">
+                                            <img src="~/build/images/loading.gif" id="ajaxSpinnerImage" title="loading..." />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pq-grid">
+                                <div id="dataTables-example_wrapper" class="dataTables_wrapper" role="grid">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="dataTables_length" id="dataTables-example_length"><label><select name="dataTables-example_length" aria-controls="dataTables-example" class=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> records per page</label></div>
+                                        </div><div class="col-sm-6"></div>
+                                    </div>
+                                    <div class="dataTables_scroll">
+                                        <div class="dataTables_scrollHead ui-state-default" style="overflow: hidden; position: relative; border: 0px; width: 100%;">
+                                            <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;">
+                                                <div class="dataTables_scrollBody" style="overflow: auto; height: 450px;">
+                                                    <table class="table table-responsive" id="idUserActivityLogs">
+                                                        <thead>
+                                                            <tr role="row">
+                                                                <th>LogDateTime</th>
+                                                                <th>MacAddress</th>
+                                                                <th>UserAction</th>
+                                                                <th>Ssid Name</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="idUserActivityDetails"></tbody>
+
+                                                    </table>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pagination-container" id="pagination-container">
+                                        <div id="show_paginator"></div>
+                                        <ul class="pagination pagination-sm" id="pagination"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" class="TotalPage" name="TotalPage" id="TotalPage" value="">
+                <input type="hidden" class="CurrentPage" name="CurrentPage" id="CurrentPage" value="1">
+                <input type="hidden" class="RecordToDisply" name="RecordToDisply" id="RecordToDisply" value="">
+                <input type="hidden" class="TotalRecords" name="TotalPage" id="TotalRecords" value="">
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/tableToExcel.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/Scripts/custompagination.js"></script>
+    <script src="~/Scripts/UserActivityLogs.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+ $(document).ready(function () {
+        navigation();
+
+        $('#dtFromDate').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 1,
+            locale: {
+                format: 'MM/DD/YYYY H:mm'
+            }
+        });
+
+        //On Page Load we need to call
+        GetUserActivityData();
+});
+</script>

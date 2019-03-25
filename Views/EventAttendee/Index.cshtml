@@ -1,0 +1,446 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/CaptivePortal_Angular/CaptivePortalApp.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/xlsx.core.min.js"></script>
+    <script src="~/Scripts/xls.core.min.js"></script>
+    <script src="~/CaptivePortal_Angular/Controllers/ManageEventController.js"></script>
+    <script src="~/CaptivePortal_Angular/Services/ManageEventService.js"></script>
+    <link href="~/Style/RequiredField.css" rel="stylesheet" />
+    @*<link href="~/Style/angularjs-datetime-picker.css" rel="stylesheet" />*@
+    <script src="~/Scripts/dirPagination.js"></script>
+    @*<script src="~/Scripts/angularjs-datetime-picker.js"></script>*@
+
+    <style>
+        .disabled {
+            pointer-events: none;
+            cursor: default;
+        }
+
+        a.ng-binding.pageactive {
+            background: #0094ff;
+            color: #ffffff;
+        }
+
+        .angularjs-datetime-picker {
+            z-index: 1600 !important; /* has to be larger than 1050 */
+        }
+
+        .selected {
+            background-color: #f6bdbd;
+        }
+    </style>
+</head>
+<body class="nav-md" ng-app="wifiModule">
+    <div class="container body" ng-controller="ManageEventController" ng-init="GetMeetGreetSSID()">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="row">
+                    <div class="col-md-1 col-sm-2 col-xs-2" style="text-align:right">
+                        <label for="SSID" style="font-size:17px; font-weight:500">SSID:</label>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-4">
+                        <select ng-model="SelectedSSID" ng-change="GetEventsPerSSID()" class="form-control col-md-2 col-sm-2 col-xs-4">
+                            <option value="" disabled="disabled">Select SSID</option>
+                            <option ng-repeat="itemNetWorkOfSite in lstNetWorkOfSites" value="{{itemNetWorkOfSite.NetWorkOfSiteId}}" class="form-control col-md-2 col-sm-2 col-xs-4">
+                                {{itemNetWorkOfSite.SsidName}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-2 col-xs-2 col-md-offset-10">
+                        <button ng-click="createNewEvent()" class="btn btn-success">Create New Event</button>
+                    </div>
+                    @*<div class="col-md-2 col-sm-2 col-xs-2">
+                            <button ng-click="editOrDeleteEvent()" class="btn btn-success">Edit/Delete Event</button>
+                        </div>*@
+                </div>
+                <br />
+
+                <div id="EventDetailsTable" style="overflow-y:auto;overflow-x:scroll; height:160px;">
+                    <table class="table table-hover table-responsive" id="EventsTable">
+                        <thead>
+                            <tr style="background-color: #ccc; color: black">
+                                <th style="display: none;">
+                                    EventId
+                                </th>
+                                @*<th>
+
+                                    </th>*@
+                                <th>
+                                    Event Name
+                                </th>
+                                <th>
+                                    Start DateTime
+                                </th>
+                                <th>
+                                    End DateTime
+                                </th>
+                                <th>
+                                    Organiser Name
+                                </th>
+                                <th>
+                                    Organiser mobile
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="Event in lstEvents">
+                                <td style="display: none;">
+                                    {{Event.EventId}}
+                                </td>
+                                @*<td>
+                                        <input type="checkbox" id="{{Event.EventId}}" value="{{Event.EventName}}"/>
+                                    </td>*@
+                                <td>
+                                    {{Event.EventName}}
+                                </td>
+                                <td>
+                                    {{Event.EventStartDateTime|utcToLocal:'dd-MM-yyyy HH:mm'}}
+                                </td>
+                                <td>
+                                    {{Event.EventEndDateTime|utcToLocal:'dd-MM-yyyy HH:mm'}}
+                                </td>
+                                <td>
+                                    {{Event.OrganiserName}}
+                                </td>
+                                <td>
+                                    {{Event.OragiserMobile}}
+                                </td>
+                                <td>
+                                    <a href="" ng-click="editEvent(Event)">Edit / Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <br /><hr />
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1 col-sm-2 col-xs-2" style="text-align:right">
+                            <label for="ViewEvents" style="font-size:17px">View</label>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-3">
+                            <select ng-model="EventSelected" ng-change="GetWifiUsersPerEvent()" class="form-control col-md-2 col-sm-2 col-xs-4">
+                                <option ng-repeat="itemEvents in lstEvents" value="{{itemEvents.EventId}}" class="form-control col-md-2 col-sm-2 col-xs-4">
+                                    {{itemEvents.EventName}}
+                                </option>
+                                <option value="0">All</option>
+                                <option value="" disabled="disabled">--Select Event--</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-3" style="text-align:center">
+                            <input type="text" class="form-control" autofocus="autofocus" id="myInput" value="" ng-model="queryText" placeholder="Search Text">
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-4">
+                            <input type="button" id="btnFind" class="btn btn-success" value="Find" ng-click="FilterUserDetails()">
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-2">
+                            <a href="" class="btn btn-success" id="btnExportEventData" ng-click="exportEventData(EventSelected)">Export</a>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-3">
+                            <a href="" class="btn btn-success" id="btnNotifyWifiUser" ng-click="NotifyEventAttendee()">Notify/DeNotify</a>
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-2">
+                            <a href="" class="btn btn-success" id="btnRegWifiUser" ng-click="RegWifiUser()">Register</a>
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-2">
+                            <a href="" class="btn btn-success" id="btnDeRegWifiUser" ng-click="DeRegisterWifiUserToEvent()">DeRegister</a>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2" style="text-align:right">
+                            <a href="" class="btn btn-success" id="btnImportListAttendee" data-toggle="modal" data-target="#ModalImportData">Import Attendee</a>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                 <div id="UserDetailsTable" style="overflow-y:auto;overflow-x:scroll; height:450px;">
+                    <table class="table table-hover table-responsive" id="UserTable">
+                        <thead>
+                            <tr style="background-color: #ccc; color: black">
+                                <th style="display: none;">
+                                    UserId
+                                </th>
+                                <th>
+
+                                </th>
+                                <th>
+                                    Username
+                                </th>
+                                <th>
+                                    Forename
+                                </th>
+                                <th>
+                                    Surname
+                                </th>
+                                <th>
+                                    Company
+                                </th>
+                                <th>
+                                    Last login
+                                </th>
+                                <th>
+                                    Logout
+                                </th>
+                                <th>
+                                    Notify
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in lstWifiUsers">
+                                <td style="display: none;" ng-if="item.UserId">
+                                    {{item.UserId}}
+                                </td>
+                                <td>
+                                    <input type="checkbox" ng-model="item.Selected" ng-click="SetSelectedUser(item)" />
+                                </td>
+                                <td>
+                                    {{item.UserName}}
+                                </td>
+                                <td>
+                                    {{item.FirstName}}
+                                </td>
+                                <td>
+                                    {{item.LastName}}
+                                </td>
+                                <td>
+                                    {{item.CompanyName}}
+                                </td>
+                                <td>
+                                    {{item.LastLoginDateTime | utcToLocal:'dd-MM-yyyy HH:mm'}}
+                                </td>
+                                <td>
+                                    {{item.LogOutDateTime | utcToLocal:'dd-MM-yyyy HH:mm' }}
+                                </td>
+                                <td ng-if="item.IsNotify">&#x2713;</td>
+                                <td ng-if="!item.IsNotify">&#x2717;</td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <ul class="pagination" id="div1" ng-show="lstWifiUsers.length">
+                                        <li><a href="1" ng-click="$event.preventDefault(); onFirstClick(1)" ng-class="{ disabled : currentPage==1 }"><<</a></li>
+                                        <li><a href="{{currentPage-1}}" ng-click="$event.preventDefault(); onPrevClick(currentPage-1)" ng-class="{ disabled : currentPage==1 }"><</a></li>
+                                        <li ng-repeat="n in range()|limitTo:maxSize"><a ng-href="{{n}}" ng-click="$event.preventDefault(); onPageNumberClick(n)" ng-class="{pageactive : currentPage==n}">{{n}}</a></li>
+                                        <li><a href="{{currentPage+1}}" ng-click="$event.preventDefault(); onNextClick(currentPage+1)" ng-class="{ disabled : currentPage==pageCount }">></a></li>
+                                        <li><a href="{{pageCount}}" ng-click="$event.preventDefault(); onLastClick(pageCount)" ng-class="{ disabled : currentPage==pageCount }">>></a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+                 <div class="modal fade" id="ModalEvent" data-backdrop="static" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" ng-click="GetEventsPerSSID()" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title"> </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-dialog modal-sm">
+                                        <form ng-submit="SaveEvent()" name="formValidation">
+                                            <div class="form-group">
+                                                <label for="EventName">EventName:</label>
+                                                <input type="text" id="EventName" ng-model="_EventDetails.EventName" name="EventName" class="form-control" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="EventStartDT">Start Date/Time:</label>
+                                                @*<input type="datetime" id="StartDT" placeholder="Enter From Date" ng-model="_EventDetails.EventStartDateTime" min="@DateTime.Now.Date.ToString("yyyy-MM-dd")" ng-model-options="{timezone:'UTC'}" name="" class="form-control" required>*@
+                                                <input type="datetime-local" id="StartDT" name="StartDT" ng-model="_EventDetails.EventStartDateTime"
+                                                       placeholder="yyyy-MM-ddTHH:mm:ss" min={{Date}} class="form-control" required />
+                                                <p ng-show="formValidation.StartDT.$error.min">Start Date must be ahead of Current DateTime.</p>
+                                                @*<input ng-model="Event.EventStartDT" class="form-control" datetime-picker date-format="yyyy-MM-dd HH:mm:ss" year="2014" month="12" day="31" />*@
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="EventEndDT">End Date/Time:</label>
+                                                <input type="datetime-local" id="EndDT" name="EndDT" ng-model="_EventDetails.EventEndDateTime"
+                                                       placeholder="yyyy-MM-ddTHH:mm:ss" min={{_EventDetails.EventStartDateTime|date:'yyyy-MM-ddTHH:mm'}} class="form-control" required />
+                                                <p ng-show="formValidation.EndDT.$error.min">End Date must be ahead of Start Date.</p>
+                                                @*<input ng-model="Event.EventEndDT" class="form-control" datetime-picker date-format="yyyy-MM-dd HH:mm:ss" year="2014" month="12" day="31" />*@
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="OrganiserName">Organiser name:</label>
+                                                <input type="text" id="OrganiserName" ng-model="_EventDetails.OrganiserName" name="OrganiserName" class="form-control" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="OrganiserMobile">Organiser mobile:</label>
+                                                <input type="text" id="OrganiserMobile" ng-model="_EventDetails.OragiserMobile" name="OrganiserMobile" placeholder="Prefix Mobile Number with Country code" class="form-control" required ng-pattern="/^[+]/">                                                
+                                                <br /><label>eg. +44XXXXXXXXXX</label>
+                                                <p ng-show="formValidation.OrganiserMobile.$error.pattern">Mobile number must be prefixed with Country Code</p>
+                                            </div>
+                                            <div class="clearfix">
+                                                <button type="button" class="btn btn-success" data-ng-disabled="formValidation.$invalid && (formValidation.StartDT.$dirty || formValidation.EndDT.$dirty)" ng-click="updateEvent(_EventDetails)" data-dismiss="modal" ng-show="updateBtn">Update</button>
+                                                <button type="submit" class="btn btn-success" id="btnSave" ng-show="saveBtn">Save</button>
+                                                <button type="button" class="btn btn-danger cancelbtn" ng-click="deleteEvent(_EventDetails)" ng-show="deleteBtn" data-dismiss="modal">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 <div class="modal fade" id="ModalRegister" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title"> </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-dialog modal-sm">
+                                        <form ng-submit="RegisterWifiUser()">
+                                            <div class="form-group">
+                                             <label for="Events">Event:</label>
+                                             <select ng-model="RegEvent" class="form-control">
+                                                    <option ng-repeat="itemEvents in lstEvents| filter:upcomingEvents" ng-if="!(itemEvents.EventEndDateTime < CurrentDate)" value="{{itemEvents.EventId}}">
+                                                        {{itemEvents.EventName}}
+                                                    </option>
+                                              </select>
+                                            </div>
+                                            <div class="clearfix">
+                                                <button type="submit" class="btn btn-success" id="btnRegister">Register</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 <div class="modal fade" id="ModalNewUser" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Register New Attendee</h4>
+                                </div>
+                            <div class="modal-body">
+                                <div class="modal-dialog modal-sm">
+                                    <form ng-submit="CreateNewUserAndRegToEvent()" name="regNewUserForm">
+                                        <div class="form-group">
+                                            <label for="UserName">UserName:</label>
+                                            <input type="text" id="UserName" ng-model="_UserDetails.UserName" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ForeName">ForeName:</label>
+                                            <input type="text" id="ForeName" ng-model="_UserDetails.ForeName" name="ForeName" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="SurName">SurName:</label>
+                                            <input type="text" id="SurName" ng-model="_UserDetails.SurName" name="SurName" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Company">Company:</label>
+                                            <input type="text" id="Company" ng-model="_UserDetails.CompanyName" name="Company" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Events">Event:</label>
+                                            <select ng-model="_UserDetails.EventId" class="form-control" name="EventId" required>
+                                                @*<option value="0" label="Please Select an Event to register"></option>*@
+                                                <option ng-repeat="itemEvents in lstEvents| filter:upcomingEvents" value="{{itemEvents.EventId}}">
+                                                    {{itemEvents.EventName}}
+                                                </option>
+                                            </select>
+                                            <p ng-show="regNewUserForm.EventId.$error.required">Select an Event from the dropdown.</p>
+                                        </div>
+                                        <div class="clearfix">
+                                            <button type="submit" class="btn btn-success" data-ng-disabled="regNewUserForm.$invalid" id="btnRegNewUser">Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                 <div class="modal fade" id="ModalImportData" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Upload CSV File</h4>
+                                <button ng-click="ShowSampleData();" class="btn btn-link"><span class="glyphicon glyphicon-question-sign"></span> Sample Data</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="modal-dialog">
+                                    <div class="row">
+                                        <label class="col-sm-2 col-md-2 col-lg-2" for="Events">Event:</label>
+                                        <div class="col-md-7 col-sm-7 col-lg-7">
+                                            <select ng-model="_UserDetails.EventId" class="form-control" name="EventId" required>
+                                                @*<option value="0" label="Please Select an Event to register"></option>*@
+                                                <option ng-repeat="itemEvents in lstEvents| filter:upcomingEvents" value="{{itemEvents.EventId}}">
+                                                    {{itemEvents.EventName}}
+                                                </option>
+                                            </select>
+                                            <p ng-show="regNewUserForm.EventId.$error.required">Select an Event from the dropdown.</p>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-sm-9 col-md-9 col-lg-9 col-xs-9">
+                                            <div class="input-group">
+                                                <label class="input-group-btn">
+                                                    <span class="btn btn-success">
+                                                        Browse&hellip;<input type="file" id="ngexcelfile" file-model="myPromotionPic" onchange="setfilename(this.value);" name="this" style="display: none;" accept="csv/*" @*onchange="angular.element(this).scope().fileChanged(this)*@ ">
+                                                    </span>
+                                                </label>
+                                                <div>
+                                                    <input type="text" class="form-control" id="filename" ng-model="FileObj.ExcelData" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button ng-click="ReadExcelData();" class="btn btn-success">upload</button>
+                                        </div>
+                                    </div>
+                                  
+                                    <div class="col-sm-2 col-lg-2 col-md-2 col-md-offset-4">
+                                        <button ng-click="SaveImportAttendeData()" class="btn btn-success">Register Users</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        navigation();
+    });
+
+    function setfilename(val) {
+        var fileName = val.substr(val.lastIndexOf("\\") + 1, val.length);
+        document.getElementById("filename").value = fileName;
+    }
+</script>
+
+

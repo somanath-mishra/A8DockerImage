@@ -1,0 +1,280 @@
+﻿<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <!-- Font Awesome -->
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="~/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="~/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- bootstrap-daterangepicker -->
+    <link href="~/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+    <div class="col-md-3 left_col" id="LeftColoumn">
+        <div class="scroll-view">
+            <div class="clearfix"></div>
+            <!-- menu profile quick info -->
+            <div class="profile clearfix">
+                <div class="profile_pic">
+                    <img src="~/Images/Flame.png"  style="border:none" alt="...." class="img-circle profile_img" id="companyImageLeftMenu"/>
+                    @*<img src="~/Images/images.png" alt="...." class="img-circle profile_img" id="companyImageLeftMenu">*@
+                </div>
+                <div class="profile_info">
+                    <h5 style="color:white">Welcome</h5>
+                    <h3 style="color: white">@Session["UserName"]</h3>
+                </div>
+            </div>
+            <!-- /menu profile quick info -->
+            <br />
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                <div class="menu_section">
+                    @if (this.User.IsInRole("WifiCoord"))
+                    {
+                        <div style="padding-left: 15px">
+                            <label style="color: white"> Site :</label> <label style="color: white">@Session["SiteName"]</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="padding-left: 15px">
+                            <label style="color: white"> Site :</label> <label style="color: white" id="lblSiteName"></label>
+                        </div>
+                    }
+                </div>
+
+                <ul class="nav side-menu">
+                    @if (this.User.IsInRole("WifiCoord"))
+                    {
+                        <li @*style="border-right: black; background: #2A3F54"*@>
+                            <a href="@Url.Action("Index", "WifiCoordHome")"><i class="fa fa-users"></i>Account Management</a>
+                        </li>
+                    }
+                    else if (this.User.IsInRole("BusinessUser"))
+                    {
+                        <li @*style="border-right: black; background: #2A3F54"*@>
+                            <a href="@Url.Action("Index", "BusinessUserHome")"><i class="fa fa-home"></i>Home </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li @*style="border-right: black; background: #2A3F54"*@>
+                            <a href="@Url.Action("Index", "Home")"><i class="fa fa-home"></i>Home </a>
+                        </li>
+                    }
+
+                    @if (this.User.IsInRole("WifiCoord"))
+                    {
+                        <li @*style="border-right: black; background: #2A3F54"*@>
+                            <a href="@Url.Action("Index", "Packages")"><i class="fa fa-desktop"></i>Package Reports </a>
+                        </li>
+                        @*<li>
+                            <a href="@Url.Action("Index", "Reports")"><i class="fa fa-users"></i>Reports</a>
+                        </li>*@
+                        <li>
+                            <a href="@Url.Action("UserDetails", "WifiCoordHome")"><i class="fa fa-cog fa-fw"></i>My Details</a>
+                        </li>
+                    }
+
+                    @if (this.User.IsInRole("GlobalAdmin") || this.User.IsInRole("SiteAdmin"))
+                    {
+                        <li>
+                            <a id="viewdashboard" class="row margin">&nbsp;&nbsp;<i class="fa fa-desktop"></i>&nbsp;View Dashboard <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li>
+                                    <a id="wifisummary" href="@Url.Action("Index", "Admin")">WiFi Summary</a>
+                                </li>
+                                <li>
+                                    <a id="WifiUsage" href="@Url.Action("WifiUsage", "Admin")">WiFi Usage</a>
+                                </li>
+                                <li>
+                                    <a id="WifiReport" href="@Url.Action("WifiReport", "Admin")">WiFi Report</a>
+                                </li>
+                                <li>
+                                    <a id="locationdashboard" class="hide" href="@Url.Action("LocationDashBoard", "Admin")" onclick="location.href = this.href + '?SiteId=' + localStorage.getItem('SiteId');return false;">Location dashboard</a>
+                                </li>
+                                @*<li>
+                                    <a id="EngageDashBoard" class="hide" href="@Url.Action("EngageDashBoard", "Admin")">Engage Dashboard</a>
+                                </li>*@
+                                @*<li>
+                                    <a id="RtlsDashBoard" class="hide" href="@Url.Action("RtlsDashBoard", "Admin")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">RTLS Dashboard</a>
+                                </li>*@
+                            </ul>
+                        </li>
+                        <li>
+                            <a id="managesite" class="row margin">&nbsp;<i class="fa fa-cog fa-fw"></i> Manage Site <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                @if (this.User.IsInRole("GlobalAdmin"))
+                                {
+                                    <li>
+                                        <a href="@Url.Action("ConfigureSite", "Admin")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">Update site</a>
+                                    </li>
+                                }
+                                <li>
+                                    <a href="@Url.Action("ManageUser", "Account")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">Manage User</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a id="managewifiuser" class="row margin">&nbsp;&nbsp;<i class="fa fa-users"></i>Manage WiFi<span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li>
+                                    <a href="@Url.Action("Index", "ConfigureSSID")">Configure SSID </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("UserDetails", "Account")">View WiFi users</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Usage")">Usage</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "UserActivityLogs")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">User Activity Logs</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a id="managertls" class="row margin hide">&nbsp;&nbsp;<img src="~/Images/geo.png" style="height: 20px; width: 20px" />&nbsp;&nbsp;Manage RTLS <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li>
+                                    <a href="@Url.Action("TestSetUpRtls", "Admin")" onclick="location.href = this.href + '?SiteName=' + localStorage.getItem('SiteName');return false;">RTLS Set-up</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("ViewRtlsData", "Admin")" onclick="location.href = this.href + '?SiteName=' + localStorage.getItem('SiteName');return false;">View RTLS data</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("ViewErrorLogRtls", "Admin")" onclick="location.href = this.href + '?SiteName=' + localStorage.getItem('SiteName');return false;">View Error log</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("ConfigureTriggerRtls", "Admin")" onclick="location.href = this.href + '?SiteName=' + localStorage.getItem('SiteName');return false;">Configure Trigger</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("ConfigureViewer", "Admin")" onclick="location.href = this.href + '?SiteId=' + localStorage.getItem('SiteId');return false;">Configure Viewer</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("GetBlacklistDevices", "Admin")" onclick="location.href = this.href + '?SiteId=' + localStorage.getItem('SiteId');return false;">Blacklist Devices</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="row margin hide">
+                            <a id="managedashboard">&nbsp;&nbsp;<i class="fa fa-desktop"></i>Manage DashBoard <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu">
+                                <li>
+                                    <a href="@Url.Action("UploadLocationDashBoardFile", "Admin")" onclick="location.href = this.href + '?SiteName=' + localStorage.getItem('SiteName');return false;">Upload File</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("LocationsMapping", "LocationIndicators")" onclick="location.href = this.href + '?SiteName=' + localStorage.getItem('SiteName');return false;">Location Mapping</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+
+                    @if (this.User.IsInRole("BusinessUser"))
+                    {
+                            <li @*style="border-right: black; background: #2A3F54"*@>
+                                <a id="viewdashboard" class="">&nbsp;&nbsp;<i class="fa fa-desktop"></i>&nbsp;View Dashboard <span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <li>
+                                        <a id="wifisummary" href="@Url.Action("Index", "Admin")">WiFi Summary</a>
+                                    </li>
+                                    <li>
+                                        <a id="WifiUsage" href="@Url.Action("WifiUsage", "Admin")">WiFi Usage</a>
+                                    </li>
+                                    <li>
+                                        <a id="WifiReport" href="@Url.Action("WifiReport", "Admin")">WiFi Report</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("WifiUserDetails", "BusinessUserHome")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">View WiFi users</a>
+                                    </li>
+                                    <li>
+                                        <a id="locationdashboard" href="@Url.Action("LocationDashBoard", "Admin")" onclick="location.href = this.href + '?SiteId=' + localStorage.getItem('SiteId');return false;">Location dashboard</a>
+                                    </li>
+                                    @*<li>
+                                        <a id="EngageDashBoard" href="@Url.Action("EngageDashBoard", "Admin")">Engage Dashboard</a>
+                                    </li>*@
+                                    @*<li>
+                                        <a id="RtlsDashBoard" href="@Url.Action("RtlsDashBoard", "Admin")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">RTLS Dashboard</a>
+                                    </li>*@
+                                    <li>
+                                        <a href="@Url.Action("Index", "UserActivityLogs")" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId');return false;">User Activity Logs</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="hide">
+                                <a id="WifiUsageBusi">&nbsp;&nbsp;<i class="fa fa-users"></i>Meet & Greet<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <li>
+                                        <a href="@Url.Action("Index", "ConfigureMeetGreet")">Configure Event </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "EventAttendee")">Manage attendee </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href="@Url.Action("UserDetails", "BusinessUserHome")"><i class="fa fa-cog fa-fw"></i>My Details</a>
+                            </li>
+                    }
+                    <li>
+                        <a onclick="localStorage.clear();window.location.href='/Account/LogOff'"><span class="glyphicon glyphicon-off" style="color:white"></span>&nbsp;&nbsp; Logout</a>
+                    </li>
+                    
+                   </ul>
+                </div>
+<div class="menu_section">
+    <ul class="nav side-menu"></ul>
+</div>
+</div>
+   <!-- /sidebar menu -->
+ </div>
+    <!-- top navigation -->
+    <div class="top_nav">
+        <div class="nav_menu">
+            <nav>
+                <div class="nav toggle">
+                    <a id="menu_toggle">
+                        <i class="fa fa-sliders" style="color:rgb(138,28,42)"></i>
+                    </a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li role="presentation" class="dropdown">
+                        <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu"></ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        @if (Session["cpToken"] != null)
+        {
+            @Html.Hidden("hdncptoken", Session["cpToken"].ToString());
+        }
+        else
+        {
+            @Html.Hidden("hdncptoken", null);
+        }
+
+        @if (Session["rtlsToken"] != null)
+        {
+            @Html.Hidden("hdnrtlsToken", Session["rtlsToken"].ToString());
+        }
+        else
+        {
+            @Html.Hidden("hdnrtlsToken",null)
+        }
+    </div>
+    <!-- top navigation -->
+</body>
+<script src="~/Scripts/navigationJS.js">
+</script>

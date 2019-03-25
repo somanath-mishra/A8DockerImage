@@ -1,0 +1,255 @@
+﻿@{
+    Layout = null;
+}
+
+
+@model A8PlatForm.Domains.CustomIdentity.ApplicationUser
+@using A8PlatForm.Domains.A8AdminModel
+
+
+<div id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+    @using (Html.BeginForm("EditUserWithRole", "Account", new { SiteId = Request.QueryString["SiteId"] }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @*<form>*@
+        <div class="form-group">
+
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.HiddenFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="Email" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">Email:</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="FirstName" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">FirstName:</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.EditorFor(model => model.ForeName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ForeName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="LastName" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">LastName:</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="Role" class="control-label col-md-3 col-sm-3 col-xs-12  required-field">Role:</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.DropDownListFor(model => model.Roles.FirstOrDefault().RoleId, ViewBag.Roles as IEnumerable<SelectListItem>, "--Select the Role--", new { @class = "form-control", @id = "roleDdl" })
+                @*@Html.EditorFor(model => model.Roles, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.ValidationMessageFor(model => model.Roles, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        if (this.User.IsInRole("GlobalAdmin"))
+        { 
+        <div class="form-group">
+            <label for="RestrictedSite" class="control-label col-md-3 col-sm-3 col-xs-12 required-field">Default Site:</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                @Html.DropDownListFor(model => model.SiteId, ViewBag.Sites as IEnumerable<SelectListItem>, "--Select the Site--", new { @class = "form-control", @id = "dropdown", @name = "SiteId", @Selected = true, @required = "required" })
+
+                @*@Html.DropDownList("siteDdl", ViewBag.sites as IEnumerable<SelectListItem>, "--Select the Site--", new { @class = "form-control", @id = "dropdown", @name = "SiteDdl", @Selected = true, @required = "required" })*@
+
+                @Html.ValidationMessageFor(model => model.SiteId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div id="DivSitewithSSIDAccess" style="display:none">
+                <label for="SiteSSIDSponsor_Access" class="control-label col-md-3 col-sm-3 col-xs-12">Site/SSID/Sponsor Access:</label>
+                <div id="SponsorList" class="col-md-6 col-sm-6 col-xs-6">
+                    @*<ul id='list'></ul>*@
+                    <input type="text" id="example" placeholder="Select" class="form-control">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div id="DivSiteAccess">
+                <label for="Site_Access" class="control-label col-md-3 col-sm-3 col-xs-12">Site Access:</label>
+                <div id='checkbox' class="col-md-6 col-sm-6 col-xs-12">
+                    @foreach (var item in ViewBag.Sites as IEnumerable<SelectListItem>)
+                    {  
+                        @*@if(ViewBag.AdminSiteAccess as IEnumerable<Site>.Any(mbox=>mbox.) ))*@
+                        string checkBoxId = "Id_CheckBox_" + @item.Value;
+                        <div data-id="">
+                            <div for=@checkBoxId><input id=@checkBoxId name="RestrictedSites" type="checkbox" class="checkBoxSites" value=@item.Value> @item.Text</div>
+                        </div>
+                    }
+                    
+
+                </div>
+            </div>
+        </div>
+        }
+
+        <div class="form-group">
+            <div id="DivSSIdAccess" style="display:none">
+                <label for="Site_Access" class="control-label col-md-3 col-sm-3 col-xs-12">SSID Access:</label>
+                <div id='chkSSIDList' class="col-md-6 col-sm-6 col-xs-6">
+                    @foreach (var item in ViewBag.lstSSIds as IEnumerable<SelectListItem>)
+                    {
+                        string checkBoxId = "Id_Check_" + @item.Value;
+                        <div data-id="">
+                            <div for=@checkBoxId><input id=@checkBoxId name="ChkSSIDProfileName" type="checkbox" class="checkBoxSites" value=@item.Value /> @item.Text</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+
+                <input type="submit" id="Delete" class="btn btn-danger" name="Command" value="Delete" onclick="return confirm('Are you sure you want to delete?')"/>
+                <input type="submit" id="Save" class="btn btn-success" name="Command" value="Save" />
+            </div>
+        </div>
+
+    }
+</div>
+
+<script type="text/javascript">
+
+    var siteId = localStorage.getItem("SiteId");
+    var siteName = localStorage.getItem("SiteName");
+    $(document).ready(function () {
+        if ($("#roleDdl option:selected").text() == "WifiCoord") {
+            $("#DivSiteAccess").hide();
+            $("#DivSSIdAccess").show();
+            $("#DivSitewithSSIDAccess").hide();
+            $.getJSON("/Account/GetAllNetworkOfSiteAccess?UserId=@Model.Id", function (result) {
+                $.each(result, function (key, val) {
+                    var checkBoxId = "Id_Check_" + val.NetworkOfSiteId;
+                    //alert(checkBoxId);
+                    $("#" + checkBoxId).prop('checked', true);
+                });
+            });
+        }
+        else if ($("#roleDdl option:selected").text() == "BusinessUser") {
+            //debugger;
+            $("#DivSiteAccess").hide();
+            $("#DivSSIdAccess").hide();
+            $("#DivSitewithSSIDAccess").show();
+            var data = { SiteId: siteId }
+            $.post("/api/GetSitesWithSsidWithSponsor", data, function (result) {
+
+                $('#SponsorList').children().remove();
+                var html = '<input type="text" id="example" placeholder="Select" class="form-control" autocomplete="off">';
+                $('#SponsorList').html(html);
+                $('#example').comboTree({
+                    source: result,
+                    isMultiple: true
+                });
+                if(result!=null)
+                {
+                    $.getJSON("/Account/GetAllSiteSsidSponsorAccess?UserId=@Model.Id", function (result) {
+                        $.each(result, function (key, val) {
+                            //debugger;
+                            var checkBoxId1 = "Id_Check_" + val.SiteId;
+                            var checkBoxId2 = "Id_CheckBox_" + val.NetworkOfSiteId;
+                            var checkBoxId3 = "Chk_Sponsor_" + val.SponsorId;
+                            $("#" + checkBoxId1).prop('checked', true);
+                            $("#" + checkBoxId2).prop('checked', true);
+                            $("#" + checkBoxId3).prop('checked', true);
+                        });
+                    });
+                }
+            });
+        }
+        else {
+            $.getJSON("/Account/GetAllSiteAccess?UserId=@Model.Id", function (result) {
+                $.each(result, function (key, val) {
+                    var checkBoxId = "Id_CheckBox_" + val.SiteId;
+                    $("#" + checkBoxId).prop('checked', true);
+                });
+            });
+        }
+    });
+
+    $(function () {
+        $("#dropdown").val(siteId);
+        $("#roleDdl,#dropdown").change(function () {
+            $("#Save").attr("disabled", false);
+            if ($("#roleDdl option:selected").text() == "WifiCoord") {
+                $("#DivSiteAccess").hide();
+                $("#DivSSIdAccess").show();
+                $("#DivSitewithSSIDAccess").hide();
+                var data = { SiteId: $("#dropdown").val() }
+                $.post("/api/GetSSID", data, function (result) {
+                    var items = [];
+                    $.each(result, function (key, val) {
+                        items.push("<div for='chk_" + val.EssProfile + "'>" + "<input id='chk_" + val.EssProfile + "' type='checkbox' name='ChkSSIDProfileName' value='" + val.NetWorkOfSiteId + "' />" + val.SsidName + "</div>");
+                    });
+                    if (items.length > 0) {
+                        $("#chkSSIDList").html(items.join(' '));
+                    }
+                    else {
+                        $("#chkSSIDList").html(items.join(' '));
+                        $("#Save").attr("disabled", "disabled");
+                        toastr.warning("First Create the SSID in Configure SSID Page");
+                        return false;
+                    }
+
+                    //$("#chkSSIDList").html(items.join(' '));
+                });
+            }
+            else if ($("#roleDdl option:selected").text() == "BusinessUser") {
+                
+                $("#DivSiteAccess").hide();
+                $("#DivSSIdAccess").hide();
+                $("#DivSitewithSSIDAccess").show();
+                var data = { SiteId: siteId }
+                $.post("/api/GetSitesWithSsidWithSponsor", data, function (result) {
+                    $('#SponsorList').children().remove();
+                    var html = '<input type="text" id="example" placeholder="Select" class="form-control" autocomplete="off">';
+                    $('#SponsorList').html(html);
+                    $('#example').comboTree({
+                        source: result,
+                        isMultiple: true
+                    });                  
+                });
+            }
+            else {
+                if ($(this).val() != "") {
+                    $('#restrictedSiteDdl').val('');
+                    var id = $(this).val();
+                    $.getJSON("/Admin/GetRestrictedSite?siteId=" + id, function (data) {
+                        var items = [];
+                        $.each(data, function (key, value) {
+                            items.push("<option value=" + this.value + ">" + this.text + "</option>");
+                        });
+                        $("#restrictedSiteDdl").html(items.join(' '));
+                    });
+                }
+
+                $("#DivSiteAccess").show();
+                $("#DivSSIdAccess").hide();
+
+                $("#dropdown").change(function () {
+                    var index = $(this).val();
+                    //        $("[data-id]").show();
+                    $("[data-id=" + index + "]").hide();
+
+                    var checkBoxId = "Id_CheckBox_" + (index);
+                    $(".checkBoxSites").attr("disabled", false);
+                    $(".checkBoxSites").prop('checked', false);
+                    $("#" + checkBoxId).prop('checked', true);
+                    $("#" + checkBoxId).attr("disabled", true);
+                });
+                
+            }
+        });
+    });
+
+
+</script>

@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+    <script src="~/Vendors/Chart.js/dist/Chart.min.js"></script>
+    <script src="~/Vendors/Chart.js/dist/Chart.js"></script>
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <link href="~/Vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    @*<link href="~/Content/tablecompare.css" rel="stylesheet" />*@
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <style type="text/css">
+                .x_title h2 {
+                    overflow: inherit;
+                }
+            </style>
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <h3 style="text-align:center">EVENT COMPARISION REPORT</h3>
+                <div style="background-color:#EDEDED;">
+                    <div class="col-lg-12 col-sm-12 col-md-12">
+                        <div class="col-xs-8 col-sm-8 col-md-8">
+                                @*<h4 style="text-align:center">EVENT COMPARISION REPORT</h4>*@
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-2">
+                            <label for="Updatebtn"></label>
+                            <input class="btn btn-success form-control" id="Updatebtn_all" type="button" value="Update">
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-2">
+                            <label for="filterbtn"></label>
+                            <input class="btn btn-success form-control" id="exportbtn" type="button" value="Export" onclick="downloadCSV(SData)">
+                        </div>
+                    </div>
+                </div>
+                <br /><br /><br />
+                <div class="comparison">
+                    <table id="table" class="table table-bordered table-responsive table-condensed">
+                        
+                        <thead>
+                            <tr>
+                                <th width="10%" style="font-size:15px">
+                                    <b><span>Choose Date</span></b>
+                                </th>
+                                <th width="20%">
+                                    <input type="text" name="datetimes" class="form-control" id="from_date0" />
+                                </th>
+                                <th width="20%">
+                                    <input type="text" name="datetimes" class="form-control" id="from_date1" />
+                                </th>
+                                <th width="20%">
+                                    <input type="text" name="datetimes" class="form-control" id="from_date2" />
+
+                                </th>
+                                <th width="20%">
+                                    <input type="text" name="datetimes" class="form-control" id="from_date3" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="section1" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Total Sessions:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Total Sessions:</td>
+                                <td id="ts0"></td>
+                                <td id="ts1"></td>
+                                <td id="ts2"></td>
+                                <td id="ts3"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="section2" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Total Users:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Total Users:</td>
+                                <td id="tu0"></td>
+                                <td id="tu1"></td>
+                                <td id="tu2"></td>
+                                <td id="tu3"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="section6" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">New Users:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>New Users:</td>
+                                <td id="tn0"></td>
+                                <td id="tn1"></td>
+                                <td id="tn2"></td>
+                                <td id="tn3"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="section3" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Male:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Male:</td>
+                                <td id="male0"></td>
+                                <td id="male1"></td>
+                                <td id="male2"></td>
+                                <td id="male3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Female:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Female:</td>
+                                <td id="female0"></td>
+                                <td id="female1"></td>
+                                <td id="female2"></td>
+                                <td id="female3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Not Answered:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Not Answered:</td>
+                                <td id="NotAnswered_0"></td>
+                                <td id="NotAnswered_1"></td>
+                                <td id="NotAnswered_2"></td>
+                                <td id="NotAnswered_3"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="section4" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">13-17:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>13-17:</td>
+                                <td id="13-17_0"></td>
+                                <td id="13-17_1"></td>
+                                <td id="13-17_2"></td>
+                                <td id="13-17_3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">18-24</td>
+                            </tr>
+                            <tr class="compare-row ">
+                                <td>18-24</td>
+                                <td id="18-24_0"></td>
+                                <td id="18-24_1"></td>
+                                <td id="18-24_2"></td>
+                                <td id="18-24_3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">25-34:</td>
+                            </tr>
+                            <tr class="compare-row ">
+                                <td>25-34:</td>
+                                <td id="25-34_0"></td>
+                                <td id="25-34_1"></td>
+                                <td id="25-34_2"></td>
+                                <td id="25-34_3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">35-44:</td>
+                            </tr>
+                            <tr class="compare-row ">
+                                <td>35-44:</td>
+                                <td id="35-44_0"></td>
+                                <td id="35-44_1"></td>
+                                <td id="35-44_2"></td>
+                                <td id="35-44_3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">45-54:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>45-54:</td>
+                                <td id="45-54_0"></td>
+                                <td id="45-54_1"></td>
+                                <td id="45-54_2"></td>
+                                <td id="45-54_3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">55-64:</td>
+                            </tr>
+                            <tr class="compare-row ">
+                                <td>55-64:</td>
+                                <td id="55-64_0"></td>
+                                <td id="55-64_1"></td>
+                                <td id="55-64_2"></td>
+                                <td id="55-64_3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Not Answered:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Not Answered:</td>
+                                <td id="NotAnsweredAge0"></td>
+                                <td id="NotAnsweredAge1"></td>
+                                <td id="NotAnsweredAge2"></td>
+                                <td id="NotAnsweredAge3"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="section5" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">IPhones:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>IPhones:</td>
+                                <td id="Iphone0"></td>
+                                <td id="Iphone1"></td>
+                                <td id="Iphone2"></td>
+                                <td id="Iphone3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Android:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Android:</td>
+                                <td id="Android0"></td>
+                                <td id="Android1"></td>
+                                <td id="Android2"></td>
+                                <td id="Android3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Windows:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Windows:</td>
+                                <td id="Windows0"></td>
+                                <td id="Windows1"></td>
+                                <td id="Windows2"></td>
+                                <td id="Windows3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Others:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Others:</td>
+                                <td id="Others0"></td>
+                                <td id="Others1"></td>
+                                <td id="Others2"></td>
+                                <td id="Others3"></td>
+                            </tr>
+                        </tbody>
+                        <tbody id="section7" >
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Deezer:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Deezer:</td>
+                                <td id="NoDeezerSponsers0"></td>
+                                <td id="NoDeezerSponsers1"></td>
+                                <td id="NoDeezerSponsers2"></td>
+                                <td id="NoDeezerSponsers3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Smg:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Smg:</td>
+                                <td id="NoSmgSponsers0"></td>
+                                <td id="NoSmgSponsers1"></td>
+                                <td id="NoSmgSponsers2"></td>
+                                <td id="NoSmgSponsers3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Deezer & Smg:</td>
+                            </tr>
+                            <tr class="compare-row" style="display:none">
+                                <td>Deezer & Smg:</td>
+                                <td id="NoDeezerAndSmgSponsers0"></td>
+                                <td id="NoDeezerAndSmgSponsers1"></td>
+                                <td id="NoDeezerAndSmgSponsers2"></td>
+                                <td id="NoDeezerAndSmgSponsers3"></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>&nbsp;</td>
+                                <td colspan="4">Not Selected:</td>
+                            </tr>
+                            <tr class="compare-row">
+                                <td>Not Selected:</td>
+                                <td id="NoNotSelectedAnySponsers0"></td>
+                                <td id="NoNotSelectedAnySponsers1"></td>
+                                <td id="NoNotSelectedAnySponsers2"></td>
+                                <td id="NoNotSelectedAnySponsers3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Scripts/WifiReport.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input[name="datetimes"]').daterangepicker({
+            autoUpdateInput: false,
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 30,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+        $('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YY H:mm') + ' - ' + picker.endDate.format('DD/MM/YY H:mm'));
+        });
+
+        $('input[name="datetimes"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        navigation();
+  });
+
+</script>

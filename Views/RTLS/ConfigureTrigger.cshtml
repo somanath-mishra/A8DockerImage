@@ -1,0 +1,118 @@
+﻿@using A8PlatForm.Domains.RTLS
+@model RtlsArea
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+    <link href="~/Style/DropDown.css" rel="stylesheet" />
+    <link href="~/build/css/custom.css" rel="stylesheet" />
+</head>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- /top navigation -->
+            <!-- page content -->
+            <div>
+                <div style="width:80%">
+                    <br />
+                    <form name="fromRtlsTrigger" id="fromRtlsTrigger">
+                        <input type="hidden" class="RtlsConfigurationId" name="RtlsConfigurationId" id="hdnRtlsConfigurationId" />
+                        <input type="hidden" class="SiteId" name="SiteId" id="hdnSiteId" />
+                        <input type="hidden" class="SiteName" name="SiteName" id="hdnSiteName" />
+                        <div class="form-group">
+                            <label for="ApproachNotification" class="control-label col-md-6 col-sm-6 col-xs-12">Approach Notification-Reset dwell (secs)</label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input type="number" min="1" pattern="0+\.[0-9]*[1-9][0-9]*$" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="ApproachNotification" id="idApproachNotification" placeholder="" class="form-control" required />
+                            </div>
+                        </div>
+                        <br />
+                        <br /><hr style="border-top: 1px solid #808080" ; />
+                        <div class="form-group">
+                            <label for="AreaNotification" class="control-label col-md-6 col-sm-6 col-xs-12">Area Notification-Reset dwell (secs)</label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input type="number" min="1" pattern="0+\.[0-9]*[1-9][0-9]*$" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="AreaNotification" id="idAreaNotification" placeholder="" class="form-control" required />
+                            </div>
+                        </div>
+                        <br /><br />
+                        <div id="GeoFencedAreas">
+                            <div class="form-group" id="GFA0">
+                                <label for="GeoFencedArea1" class="control-label col-md-6 col-sm-6 col-xs-12">GeoFencedArea1</label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <input type="text" name="GeoFencedAreas[0]" id="idGeoFencedArea0" placeholder="" class="form-control" />
+                                    <input type="hidden" name="id" id="RtlsId0" />
+                                </div>
+                            </div>
+                            <br /><br />
+                            <div class="form-group" id="GFA1">
+                                <label for="GeoFencedArea2" class="control-label col-md-6 col-sm-6 col-xs-12">GeoFencedArea2</label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <input type="text" name="GeoFencedAreas[1]" id="idGeoFencedArea1" placeholder="" class="form-control" />
+                                    <input type="hidden" name="id" id="RtlsId1" />
+                                </div>
+                            </div>
+                            <br /><br />
+                            <div class="form-group" id="GFA2">
+                                <label for="GeoFencedArea3" class="control-label col-md-6 col-sm-6 col-xs-12">GeoFencedArea3</label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <input type="text" name="GeoFencedAreas[2]" id="idGeoFencedArea2" placeholder="" class="form-control" />
+                                    <input type="hidden" name="id" id="RtlsId2" />
+                                </div>
+                            </div>
+                            <br /><br />
+                            <div class="form-group" id="GFA3">
+                                <label for="GeoFencedArea4" class="control-label col-md-6 col-sm-6 col-xs-12">GeoFencedArea4</label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <input type="text" name="GeoFencedAreas[3]" id="idGeoFencedArea3" placeholder="" class="form-control" />
+                                    <input type="hidden" name="id" id="RtlsId3" />
+                                </div>
+                                <br /><br />
+                            </div>
+                            <br />
+                        </div>
+                        <input type="button" id="add-btn" value="Add one more Geo-Fenced Area" class="btn btn-success">
+                        <hr style="border-top: 1px solid #808080" ; />
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <input type="button" value="Save Changes" class="btn btn-success" id="btnRtlsTrigger" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- DateJS -->
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <script src="~/Rtls_Js/RtlsTrigger.js"></script>
+    <script>
+    $('#add-btn').on('click', function () {
+        // get the last DIV which ID starts with ^= "GFA"
+        var $div = $('div[id^="GFA"]:last');
+
+        // Read the Number from that DIV's ID (i.e: 3 from "GFA3")
+        // And increment that number by 1
+        var num = parseInt($div.prop("id").match(/\d+/g), 10) + 1;
+
+        $('#GeoFencedAreas').append("<div class='form-group' id='GFA" + num + "'>" +
+                                "<label for='GeoFencedArea"+(num+1)+"' class='control-label col-md-6 col-sm-6 col-xs-12'>"+"GeoFencedArea"+(num+1)+"</label>"+
+                                "<div class='col-md-6 col-sm-6 col-xs-12'>"+
+                                    "<input type='text' name='GeoFencedAreas["+num+"]' id='idGeoFencedArea" + num + "' placeholder='' class='form-control' />" +
+                                    "<input type='hidden' name='id' id='RtlsId" + num + "' />" +
+                                "</div>"+
+                                "<br />"+"<br />"+
+                            "</div>");
+     });
+   </script>
+</body>
+</html>

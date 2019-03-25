@@ -1,0 +1,61 @@
+﻿#ajaxSpinnerContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        #ajaxSpinnerImage {
+            display: none;
+        }
+
+        .panel-body {
+            padding-top: 150px;
+        }
+
+        div.pq-grid {
+            background: #fff;
+            color: #333;
+            border: 1px solid #99bce8;
+        }
+
+        div.pq-grid-title {
+            background: white;
+            border: 1px solid #fff;
+            border-bottom: 1px solid #c5c5c5;
+        }
+
+        div.pq-grid-title {
+            border-bottom: 1px solid #c5c5c5;
+            zoom: 1;
+            padding: 5px;
+            overflow: hidden;
+        }
+
+        div.pq-grid * {
+            font-family: Arial;
+            font-size: 12px;
+            line-height: normal;
+            margin: 0;
+            padding: 0;
+        }
+
+        .pq-grid .pq-grid-top {
+            border-width: 0;
+        }
+
+        #dataTables-example_length {
+            display: none;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page-active {
+            display: block;
+        }

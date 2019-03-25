@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "GetRTLSLogs";
+    Layout = null;
+}
+<head>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/ju-1.11.4/jqc-1.11.3,dt-1.10.8/datatables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
+    <title>RTLSRegisteredData</title>
+</head>
+<body>
+    <br /><br /><br />
+    <table id="myDataTable" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Thread</th>
+                <th>Level</th>
+                <th>Logger</th>
+                <th>Message</th>
+                <th>Exceptions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+    $.noConflict();
+    $(document).ready(function () {
+        $('#myDataTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "@string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))/Base/AjaxHandlerToGetLogs",
+                "type": "POST"
+            },
+            "columns": [
+                { "data": "Id" },
+                { "data": "Date" },
+                { "data": "Thread" },
+                { "data": "Level" },
+                { "data": "Logger" },
+                { "data": "Message" },
+                { "data": "Exception" }
+            ]
+        });
+    });
+</script>
+

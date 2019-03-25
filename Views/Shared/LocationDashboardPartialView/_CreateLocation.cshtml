@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            @Html.Partial("~/Views/Shared/_LeftMenu.cshtml")
+            <div class="right_col" role="main">
+                <div class="form-horizontal">
+                    <h4> Create LocationIndicator</h4>
+                    <hr />
+                    <input data-val="true" data-val-number="The field AreaOfInterestId must be a number." data-val-required="The AreaOfInterestId field is required." id="AreaOfInterestId" name="AreaOfInterestId" type="hidden" value="">
+                    <input type="hidden" value="" name="SiteName" id="siteName">
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="Name">Name</label>
+                        <div class="col-md-10">
+                            <input class="form-control text-box single-line" data-val="true" data-val-required="Enter the Area Name" id="name" name="Name" style="width:30%" type="text" value="">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="LoctionIndicator">LoctionIndicator</label>
+                        <div class="col-md-10" id="txtDiv">
+                            <input class="form-control text-box single-line" data-val="true" data-val-required="Enter the LocationIndicator Name" id="locationIndicator" name="LoctionIndicator" style="width:30%" type="text" value="">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="LoctionIndicator" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="NeighBourName">NeighBourName</label>
+                        <div class="col-md-10" id="txtDiv">
+                            <input class="form-control text-box single-line" id="neighBourName" name="NeighBourName" style="width:30%" type="text" value="">
+                            <span class="field-validation-valid text-danger" data-valmsg-for="NeighBourName" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="button" value="Save" class="btn btn-success" id="btnsubmit" onclick="create()">
+                            <a href="/LocationIndicators/LocationsMapping" class="btn btn-success" onclick="location.href = this.href + '?siteId=' + localStorage.getItem('SiteId'); return false;" role="button" style="cursor:pointer">Back</a>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <!-- /page content -->
+        <!-- footer content -->
+        <footer></footer>
+        <!-- /footer content -->
+    </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        navigation();
+    })
+</script>
+<script type="text/javascript">
+    var siteName = localStorage.getItem('SiteName').toString().trim();
+    function create() {
+        var objlocationIndicator = { SiteName: siteName, Name: document.getElementById('name').value, LoctionIndicator: document.getElementById('locationIndicator').value, NeighBourName: document.getElementById('neighBourName').value }
+        var baseUrl = localStorage.getItem('dashboardUrl').toString().trim();
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(objlocationIndicator),
+            contentType: "application/json",
+            url: baseUrl + "/locationIndicators/api/Create",
+            success: function (data) {
+                window.location.href = "/LocationIndicators/LocationsMapping?SiteName=" + siteName;
+            },
+            failure: function (response) {
+                alert(response);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(textStatus);
+            }
+        })
+    }
+</script>

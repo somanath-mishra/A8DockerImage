@@ -1,0 +1,172 @@
+﻿@model IEnumerable<RTLS.Models.MacAddress>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="navbar-static-top">
+    <div class="row col-lg-12 col-sm-12 col-md-12">
+        @*@{ Html.RenderPartial("_Alert"); }*@
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <h4>Real Time Location Services-API administrator</h4>
+        </div>
+        <div class="pull-right col-lg-6 col-md-6 col-sm-6">
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                @Html.ActionLink("View RTLS Data", "RTLSRegisteredData", "Admin", null, new { @id = "RTLSData", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                @Html.ActionLink("View RTLS Log", "GetRTLSLogs", "Admin", null, new { @id = "GetRTLSLogs", @class = "btn btn-info" })
+            </div>
+            <div class="col-md-3 col-sm-3 col-lg-3">
+                @Html.ActionLink("View RTLSRegistered Data", "ViewMonitorDevices", "Admin", null, new { @id = "GetRegistred", @class = "btn btn-info" })
+            </div>
+        </div>
+    </div>
+    <br />
+</div>
+<br /><br />
+<div class="col-sm-12 col-lg-12 col-md-12">
+    @using (Html.BeginForm("Index", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        <div class="container row col-md-5 col-lg-5 col-sm-5">
+            <div class="form-group">
+                <label class="control-label col-md-5">Enter the Devices</label>
+                <div class="btn pull-left form-horizontal" id="txtDiv">
+                    <input type="text" id="txtMacDevices" name="MacAddresses" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="container row  col-md-1 col-lg-1 col-sm-1">
+            <div class="form-group">
+                <input type="submit" class="btn btn-info" value="Save" name="Command" title="Save" id="btnSave">
+            </div>
+        </div>
+    }
+</div>
+<br /><br />
+<div class="col-sm-12 col-lg-12 col-sm-12">
+    <div class="form-group row">
+        <!--call the api for register as per the selection-->
+        <input type="button" class="btn btn-info BtnChkSelect" value="Register" id="btnRegister" title="Register" disabled>
+        <input type="button" class="btn btn-info BtnChkSelect" value="De-Register" id="btnDeRegister" title="De-Registe" disabled>
+        <input type="button" class="btn btn-info BtnChkSelect" value="Delete Mac Address" id="btnDeleteMac" title="Delete Mac Address" disabled />
+        <input type="button" class="btn btn-info BtnChkSelect" value="Get Latest Position" id="btnLatestVersion" title="Postion" disabled>
+
+    </div>
+</div>
+<br />
+<div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="body-content">
+        <table class="table" id="macDetails">
+            <tr>
+                <th>
+                    <input type="checkbox" name="chkMacDevices" id="chkMacDevices" />
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Mac)
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    IsCreatedByAdmin
+                </th>
+                <th>
+                    IsTracking
+                </th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" value="@item.Id" name="chkMacDevices" class="chKDevices" />
+                    </td>
+                    <td class="tdMac">
+                        @Html.DisplayFor(modelItem => item.Mac)
+                    </td>
+                    <td>
+                        @Enum.GetName(typeof(RTLS.Enum.DeviceStatus), item.Intstatus)
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(modelItem => item.IsCreatedByAdmin, new { @id = "chkIsCreatedByAdmin", @class = "chkIsCreatedByAdmin" })
+                    </td>
+                    <td>
+                        @Html.CheckBoxFor(modelItem => item.IsTracking, new { @id = "chkIsTracking", @class = "chkIsTracking", @name = "chkIsTracking" })
+                    </td>
+                    <td>
+                        @Html.ActionLink("View Device Data", "RTLSDataAsDevice", "Admin", new { DeviceId = item.Mac }, new { @id = "GetRegistred", @class = "btn btn-info" })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+</div>
+
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("input[class='chkIsTracking']").change(function () {
+            var mac = $(this).parents("tr").find(".tdMac").text().trim();
+            var data={Mac:mac,IsTracking:$(this).is(":checked")}
+            $.post("/Admin/UpdateIsTracking", data, function (response) {
+                location.reload();
+            });
+        });
+
+        $("input[name='chkMacDevices']").change(function () {
+            if ($(this).is(":checked")) {
+                $(".BtnChkSelect").removeAttr("disabled");
+            } else {
+                $(".BtnChkSelect").attr("disabled", "disabled");
+            }
+        })
+
+        $("#btnRegister").on("click", function () {
+            var arrData = [];
+            $.each($("input[name='chkMacDevices']:checked"), function () {
+                arrData.push($(this).parents("tr").find(".tdMac").text().trim());
+            });
+            var data = { MacAddresses: arrData, IscreatedByAdmin:true }
+            $.post("/RealTimeLocation/AddDevices/", data, function (response) {
+                if (response.result.returncode == 0) {
+                    alert(arrData + " " + "Register successfully");
+                }
+                else {
+                    alert(response.result.errmsg);
+                }
+                location.reload();
+            });
+        });
+
+        $("#btnDeRegister").on("click", function () {
+            var arrData = [];
+            $.each($("input[name='chkMacDevices']:checked"), function () {
+                arrData.push($(this).parents("tr").find(".tdMac").text().trim());
+            });
+            var data = { MacAddresses: arrData}
+            $.post("/RealTimeLocation/DeRegisterDevices/", data, function (response) {
+                if (response.result.returncode == 0) {
+                    alert(arrData + " " + "DeRigisterd successfully");
+                }
+                else {
+                    alert(response.result.errmsg);
+                }
+                location.reload();
+            });
+        });
+
+        $("#btnDeleteMac").on("click", function () {
+            var arrData = [];
+            $.each($("input[name='chkMacDevices']:checked"), function () {
+                arrData.push($(this).parents("tr").find(".tdMac").text().trim());
+            });
+            var data = { MacAddresses: arrData }
+            $.post("/Admin/DeleteMacAddress/", data, function (e) {
+                location.reload();
+            });
+        });
+    });
+</script>
+
